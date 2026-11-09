@@ -885,8 +885,12 @@ const M3000=(function(){const target=3000/(2*R);let a=0.0005,b=1.5;for(let k=0;k
   let last=0,raf=0;
   const send=()=>{raf=0;const h=Math.ceil(document.body.getBoundingClientRect().height);
     if(Math.abs(h-last)<2)return;last=h;
+    /* 블로그 스킨의 기존 수신 코드(antenna-types 형식)와 같은 신호로 보냄 */
+    window.parent.postMessage({type:'antenna-types:height',height:h},'*');
     window.parent.postMessage({type:'hfp-height',h:h,page:location.pathname},'*');};
   const queue=()=>{if(!raf)raf=requestAnimationFrame(send);};
+  /* 부모가 늦게 준비되어 높이를 다시 요청하면(ping) 즉시 다시 보냄 */
+  window.addEventListener('message',e=>{const d=e.data;if(d&&d.type==='antenna-types:ping'){last=0;queue();}});
   if('ResizeObserver' in window)new ResizeObserver(queue).observe(document.body);
   window.addEventListener('load',queue);window.addEventListener('resize',queue);
   document.addEventListener('click',()=>setTimeout(queue,50));
