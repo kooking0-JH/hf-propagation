@@ -137,6 +137,8 @@ table.cmp{width:100%;border-collapse:collapse;font-size:.88em;margin-top:6px}
 table.cmp th,table.cmp td{border-bottom:1px solid var(--line);padding:8px 8px;text-align:left;vertical-align:top}
 table.cmp th{color:var(--muted);font-weight:500;white-space:nowrap}
 table.cmp thead th{color:var(--ink);font-weight:700}
+table.cmp thead th{white-space:normal}
+table.cmp thead th small{display:block;font-weight:400;font-size:.82em;color:var(--muted)}
 .scroll{overflow-x:auto}
 .evcard{padding:14px 16px}
 .evcard h3{margin:0;font-size:1em}
@@ -396,7 +398,7 @@ details[open] .cyctog .c{display:inline}
 
   <h3 class="sub">NOAA 우주기상 등급 <small>NOAA Space Weather Scales</small></h3>
   <div class="card scroll"><table class="cmp">
-    <thead><tr><th>등급</th><th>R — 전파 두절 (Radio Blackout)</th><th>S — 태양 방사선 폭풍 (Solar Radiation Storm)</th><th>G — 지자기 폭풍 (Geomagnetic Storm)</th></tr></thead>
+    <thead><tr><th>등급</th><th>R — 전파 두절<small>Radio Blackout</small></th><th>S — 태양 방사선 폭풍<small>Solar Radiation Storm</small></th><th>G — 지자기 폭풍<small>Geomagnetic Storm</small></th></tr></thead>
     <tbody>
       <tr><th>기준</th><td>X선 플레어 세기</td><td>≥10 MeV 양성자 플럭스</td><td>Kp 지수</td></tr>
       <tr><th>1 (minor)</th><td>M1 — 주간 HF가 약하게, 가끔 끊김</td><td>10 pfu — 극지 HF에 약한 영향</td><td>Kp 5 — 고위도 HF 약화</td></tr>
