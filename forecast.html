@@ -175,6 +175,8 @@ svg .mono{font-family:var(--mono)}
 .mt .desc{font-size:.85em;color:var(--muted);min-height:2.6em}
 .mt .when{font-size:.75em;color:var(--muted);font-family:var(--mono)}
 .mt svg{width:100%;height:auto;display:block;margin-top:4px}
+.mt .trend{display:inline-block;margin:10px 0 4px;font-size:.86em;font-weight:600;text-decoration:none;border:1.5px solid var(--line);border-radius:8px;padding:6px 10px;box-shadow:0 2px 0 var(--line)}
+.mt .trend:hover{border-color:var(--accent)}
 .lv{display:inline-block;font-size:.78em;font-weight:700;padding:1px 9px;border-radius:10px;white-space:nowrap}
 .lv.g{background:color-mix(in srgb,var(--ret) 18%,transparent);color:var(--ret)}
 .lv.f{background:color-mix(in srgb,var(--marg) 24%,transparent);color:color-mix(in srgb,var(--marg) 65%,var(--ink))}
@@ -464,7 +466,8 @@ const fmtT=s=>{const d=new Date(/Z$|[+-]\d\d:?\d\d$/.test(s)?s:s+'Z');if(isNaN(d
 const num=v=>(v==null||v===''||isNaN(+v))?null:+v;
 
 /* ---------- parsers ---------- */
-function parseDSD(t){const rows=[];t.split('\n').forEach(l=>{if(!/^\d{4} \d\d \d\d/.test(l))return;const a=l.trim().split(/\s+/);rows.push({date:a[0]+'-'+a[1]+'-'+a[2],flux:num(a[3]),ssn:num(a[4])});});return rows;}
+function parseDSD(t){const rows=[];t.split('\n').forEach(l=>{if(!/^\d{4} \d\d \d\d/.test(l))return;const a=l.trim().split(/\s+/);const ok=v=>{v=num(v);return v!=null&&v>=0?v:null;};/* -999·-1 등 결측치는 null */
+  rows.push({date:a[0]+'-'+a[1]+'-'+a[2],flux:ok(a[3]),ssn:ok(a[4])});});return rows;}
 function parseDGD(t){const rows=[];t.split('\n').forEach(l=>{if(!/^\d{4} \d\d \d\d/.test(l))return;const m=l.match(/(-?\d+)\s+(-?\d+\.\d\d)/);if(!m)return;
   const ks=(l.match(/-?\d+\.\d\d/g)||[]).slice(-8).map(Number).filter(v=>v>=0);
   rows.push({date:l.slice(0,10).replace(/ /g,'-'),A:+m[1],kpMax:ks.length?Math.max(...ks):null});});return rows;}
@@ -503,7 +506,7 @@ function spark(vals,opt){
   const tf=opt.log?(x=>Math.log10(x)):(x=>x);const L=tf(lo),Hh=tf(hi);
   const x=i=>P+i*(W-2*P)/(vals.length-1), y=val=>H-P-(tf(val)-L)/(Hh-L)*(H-2*P-12);
   (opt.refs||[]).forEach(r=>{const yy=y(r.v);if(yy<P||yy>H)return;S('line',{x1:P,x2:W-P,y1:yy,y2:yy,stroke:r.c||'var(--line)','stroke-dasharray':'3 3'},svg);T(svg,W-P,yy-2,r.t,{'text-anchor':'end','font-size':9,fill:r.c||'var(--muted)',class:'mono'});});
-  if(opt.bars){const bw=(W-2*P)/vals.length;vals.forEach((val,i)=>{if(val==null)return;const yy=y(val);S('rect',{x:P+i*bw+0.5,y:yy,width:Math.max(bw-1,1),height:H-P-yy,fill:opt.color?opt.color(val):'var(--accent)',rx:1},svg);});}
+  if(opt.bars){const bw=(W-2*P)/vals.length;vals.forEach((val,i)=>{if(val==null)return;const yy=Math.min(y(val),H-P-1.5);/* 0도 최소 높이로 표시 */S('rect',{x:P+i*bw+0.5,y:yy,width:Math.max(bw-1,1),height:H-P-yy,fill:opt.color?opt.color(val):'var(--accent)',rx:1},svg);});}
   else{let d='';vals.forEach((val,i)=>{if(val==null)return;d+=(d?'L':'M')+x(i).toFixed(1)+' '+y(val).toFixed(1);});S('path',{d:d,fill:'none',stroke:opt.stroke||'var(--accent)','stroke-width':1.8,'stroke-linejoin':'round'},svg);
     const li=vals.length-1;if(vals[li]!=null)S('circle',{cx:x(li),cy:y(vals[li]),r:3,fill:opt.stroke||'var(--accent)'},svg);}
   if(opt.cap)T(svg,P,10,opt.cap,{'font-size':9.5,fill:'var(--muted)'});
@@ -530,6 +533,7 @@ function renderScales(){
 }
 
 /* ---------- render: metric cards ---------- */
+function bzLink(){const a=el('a','trend','최근 추이 보기 → NOAA 실시간 태양풍 (Real Time Solar Wind)');a.href='https://www.swpc.noaa.gov/products/real-time-solar-wind';a.target='_blank';a.rel='noopener';return a;}
 function metric(o){
   const c=el('div','card mt');
   c.append(el('div','nm',`${o.name}<small>${o.en}</small>`));
@@ -573,8 +577,8 @@ function renderMetrics(){
     when:D.xTime?'측정 '+fmtT(D.xTime):''}));
   /* Bz */
   box.append(metric({name:'행성간 자기장 Bz',en:'IMF Bz (GSM)',val:D.bz!=null?(D.bz>0?'+':'')+D.bz.toFixed(1):null,unit:'nT',lv:D.bz!=null?LV.bz(D.bz):null,
-    desc:D.bt!=null?`전체 세기 Bt ${D.bt.toFixed(1)} nT — 음수가 오래 이어지면 폭풍 예고`:'음수가 오래 이어지면 폭풍 예고',
-    svg:D.bz6&&D.bz6.length?spark(D.bz6,{min:Math.min(-12,...D.bz6.filter(v=>v!=null)),max:Math.max(12,...D.bz6.filter(v=>v!=null)),stroke:'var(--e)',cap:'최근 6시간',refs:[{v:0,t:'0'},{v:-10,t:'−10',c:'var(--pen)'}]}):null,
+    desc:D.bt!=null?`전체 세기 Bt ${D.bt.toFixed(1)} nT — 음수가 몇 시간 이어지면 지자기 폭풍 가능성 증가`:'음수가 몇 시간 이어지면 지자기 폭풍 가능성 증가',
+    svg:bzLink(),
     when:D.bzTime?'측정 '+fmtT(D.bzTime):''}));
 }
 
@@ -683,7 +687,7 @@ function cycleText(){
   const minR=sm.filter(r=>r['time-tag']>='2018-01'&&r['time-tag']<='2021-06').reduce((a,b)=>b.smoothed_ssn<a.smoothed_ssn?b:a);
   const maxR=c25.reduce((a,b)=>b.smoothed_ssn>a.smoothed_ssn?b:a);
   CYC.peak={t:maxR['time-tag'],v:maxR.smoothed_ssn};
-  const last=CYC.obs[CYC.obs.length-1];
+  const vObs=CYC.obs.filter(r=>r.ssn!=null&&r.ssn>=0);const last=vObs[vObs.length-1]||CYC.obs[CYC.obs.length-1];/* 미집계(-1) 달은 건너뜀 */
   const lastSm=sm[sm.length-1];
   const nextMin=(CYC.pred||[]).find(r=>r.predicted_ssn<20);
   const declining=lastSm['time-tag']>maxR['time-tag']&&lastSm.smoothed_ssn<maxR.smoothed_ssn*0.92;
@@ -720,7 +724,8 @@ function renderO27(){
   T(svg,W-8,(Y0+Y1)/2,'Kp',{'text-anchor':'middle','font-size':12,fill:'var(--f2)',transform:`rotate(90 ${W-8} ${(Y0+Y1)/2})`});
   /* Kp bars */
   const bar=(t,v,pred)=>{const w=Math.max(cw*0.62,2);const col=v>=5?'var(--pen)':v>=4?'var(--marg)':'var(--f2)';
-    S('rect',{x:xc(t)-w/2,y:yk(v),width:w,height:Y1-yk(v),fill:col,'fill-opacity':pred?0.35:0.85,rx:1.5},svg);
+    const top=Math.min(yk(v),Y1-1.5);/* Kp 0도 최소 높이로 표시해 자료 없음과 구분 */
+    S('rect',{x:xc(t)-w/2,y:top,width:w,height:Y1-top,fill:col,'fill-opacity':pred?0.35:0.85,rx:1},svg);
     if(pred&&v>=5)T(svg,xc(t),yk(v)-4,'G'+gOfKp(v),{'text-anchor':'middle','font-size':10,'font-weight':700,fill:'var(--pen)',class:'mono'});};
   obsK.forEach(r=>bar(r.d,r.v,false));O.rows.forEach(r=>bar(r.d,r.kp,true));
   S('line',{x1:X0,x2:X1,y1:yk(5),y2:yk(5),stroke:'var(--pen)','stroke-dasharray':'5 4','stroke-width':1.2},svg);
@@ -762,7 +767,7 @@ function renderCycMini(){
   line(CYC.obs,'smoothed_ssn',{stroke:'var(--accent)','stroke-width':2.2});
   line(CYC.pred||[],'predicted_ssn',{stroke:'var(--abs)','stroke-width':2,'stroke-dasharray':'4 3'});
   const now=new Date(),tn=now.getFullYear()+(now.getMonth()+0.5)/12;
-  const last=CYC.obs[CYC.obs.length-1];
+  const vObs=CYC.obs.filter(r=>r.ssn!=null&&r.ssn>=0);const last=vObs[vObs.length-1]||CYC.obs[CYC.obs.length-1];/* 미집계(-1) 달은 건너뜀 */
   S('circle',{cx:x(tn),cy:y(Math.min(last.ssn,175)),r:4,fill:'var(--ink)'},svg);
   T(svg,x(tn)-6,12,'지금',{'text-anchor':'end','font-size':10,'font-weight':700,fill:'var(--ink)'});
 }
@@ -774,8 +779,15 @@ async function load(){
   const R={};keys.forEach((k,i)=>R[k]=res[i].status==='fulfilled'?res[i].value:null);
   /* flux & ssn */
   try{const f=Array.isArray(R.flux)?R.flux[0]:R.flux;D.sfi=num(f&&f.flux);D.sfiTime=f&&f.time_tag;}catch(e){}
-  if(R.dsd){D.dsd=parseDSD(R.dsd);const l=D.dsd[D.dsd.length-1];if(l){if(D.sfi==null){D.sfi=l.flux;D.sfiTime=l.date;}D.ssn=l.ssn;D.ssnDate=l.date;}
-    const l7=D.dsd.slice(-7);if(l7.length){D.sfi7=l7.reduce((a,b)=>a+b.flux,0)/l7.length;D.ssn7=l7.reduce((a,b)=>a+b.ssn,0)/l7.length;}}
+  if(R.dsd){D.dsd=parseDSD(R.dsd);
+    const vf=D.dsd.filter(r=>r.flux!=null),vs=D.dsd.filter(r=>r.ssn!=null);
+    const lf=vf[vf.length-1],ls=vs[vs.length-1];
+    if(lf&&D.sfi==null){D.sfi=lf.flux;D.sfiTime=lf.date;}
+    if(ls){D.ssn=ls.ssn;D.ssnDate=ls.date;}
+    /* 7일 평균은 값이 있는 날만으로 계산 */
+    const f7=vf.slice(-7),s7=vs.slice(-7);
+    if(f7.length)D.sfi7=f7.reduce((a,b)=>a+b.flux,0)/f7.length;
+    if(s7.length)D.ssn7=s7.reduce((a,b)=>a+b.ssn,0)/s7.length;}
   /* A */
   if(R.dgd){D.dgd=parseDGD(R.dgd);const ok=D.dgd.filter(r=>r.A>=0);const last=D.dgd[D.dgd.length-1];
     const full=ok.length?ok[ok.length-(last&&last.A>=0&&ok.length>1?2:1)]:null;
