@@ -3,13 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<script>
+/* 블로그 등에 iframe으로 넣었을 때는 항상 밝은 테마(흰 바탕)로 고정.
+   주소로 직접 열었을 때는 기기의 라이트/다크 설정을 따름. */
+try{if(window.self!==window.top)document.documentElement.setAttribute('data-theme','light');}catch(e){document.documentElement.setAttribute('data-theme','light');}
+</script>
 <title>전파 예보 읽기</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f4f6f9; --panel:#ffffff; --ink:#18212d; --muted:#5a6676; --line:#d8dee6; --soft:#eef2f7;
+  --bg:#f8f9fa; --panel:#ffffff; --ink:#212529; --muted:#5c636a; --line:#dee2e6; --soft:#f1f3f5;
   --accent:#1d63d8; --accent-ink:#ffffff;
   --sky1:#e9f1fb; --sky2:#f7fafd; --ground:#7a8a45; --groundfill:#e6ead8;
   --d:#e07a2f; --e:#2a9d68; --f1:#4f86e8; --f2:#8a5cf0;
