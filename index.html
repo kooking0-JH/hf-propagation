@@ -343,14 +343,26 @@ const SUP=['⁰','¹','²','³','⁴','⁵','⁶','⁷'];
 function segBind(id,cb){const box=document.getElementById(id);box.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;box.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));cb(b.dataset.v);});}
 function segSet(id,v){document.getElementById(id).querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.v===String(v)));}
 
-/* ---------- tabs ---------- */
+/* ---------- tabs & window resize ---------- */
 const renderers={};
 const MQ=window.matchMedia('(max-width:640px)');
 const isMob=()=>MQ.matches;
 function bump(svg,k){svg.querySelectorAll('text').forEach(t=>{const f=parseFloat(t.getAttribute('font-size')||'12');t.setAttribute('font-size',(f*k).toFixed(1));});}
-const onMQ=()=>Object.values(renderers).forEach(f=>f());
-if(MQ.addEventListener)MQ.addEventListener('change',onMQ);else MQ.addListener(onMQ);
+/* 창 크기 변경: 가로 폭이 실제로 바뀐 경우에만 현재 탭을 다시 그림
+   (휴대폰 스크롤 중 주소창이 숨었다 나타나며 생기는 세로 크기 변화는 무시) */
+let resizeTimer=null,lastW=window.innerWidth;
+window.addEventListener('resize',()=>{
+  if(window.innerWidth===lastW)return;
+  lastW=window.innerWidth;
+  clearTimeout(resizeTimer);
+  resizeTimer=setTimeout(()=>{
+    const activeTab=document.querySelector('.tab[aria-selected="true"]');
+    if(activeTab&&renderers[activeTab.dataset.p])renderers[activeTab.dataset.p]();
+  },120);
+});
 $$('.tab').forEach(b=>b.addEventListener('click',()=>{
+  /* 탭을 바꾸면 ①·③ 탭의 하루 재생 타이머를 모두 정지 */
+  window.dispatchEvent(new CustomEvent('tab-change-stop'));
   $$('.tab').forEach(x=>x.setAttribute('aria-selected',String(x===b)));
   $$('.panel').forEach(p=>p.classList.toggle('on',p.id===b.dataset.p));
   if(renderers[b.dataset.p])renderers[b.dataset.p]();
@@ -459,6 +471,7 @@ $$('.tab').forEach(b=>b.addEventListener('click',()=>{
     if(isMob())bump(svg,1.25);
   }
   const stop=()=>{if(timer){clearInterval(timer);timer=null;$('#p1play').textContent='▶ 하루 재생';}};
+  window.addEventListener('tab-change-stop',stop);
   $('#p1t').addEventListener('input',e=>{stop();t=+e.target.value;draw();});
   $('#p1pre').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;stop();t=+b.dataset.v;draw();});
   $('#p1play').addEventListener('click',()=>{
@@ -791,9 +804,11 @@ const M3000=(function(){const target=3000/(2*R);let a=0.0005,b=1.5;for(let k=0;k
   $('#p3s').addEventListener('input',e=>{st.ssn=+e.target.value;draw();});
   $('#p3sc').addEventListener('click',e=>{const c=e.target.closest('button');if(!c)return;st.ssn=+c.dataset.v;$('#p3s').value=st.ssn;draw();});
   segBind('p3season',v=>{st.season=v;draw();});
-  $('#p3t').addEventListener('input',e=>{st.t=+e.target.value;draw();});
+  const stop=()=>{if(timer){clearInterval(timer);timer=null;$('#p3play').textContent='▶ 하루 재생';}};
+  window.addEventListener('tab-change-stop',stop);
+  $('#p3t').addEventListener('input',e=>{stop();st.t=+e.target.value;draw();});
   $('#p3play').addEventListener('click',()=>{
-    if(timer){clearInterval(timer);timer=null;$('#p3play').textContent='▶ 하루 재생';return;}
+    if(timer){stop();return;}
     $('#p3play').textContent='■ 정지';
     timer=setInterval(()=>{st.t=+(st.t+0.1).toFixed(1);if(st.t>24)st.t=0;draw();},70);
   });
