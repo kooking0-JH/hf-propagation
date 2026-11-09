@@ -188,7 +188,7 @@ svg .mono{font-family:var(--mono)}
       <div class="card read">
         <h3>임계 주파수 (critical frequency)</h3>
         <dl class="kv" id="p1kv"></dl>
-        <p style="font-size:.9em;margin:10px 0 0">전파를 수직으로 쏘아 올렸을 때 그 층에서 되돌아오는 가장 높은 주파수입니다. 층의 자유 전자가 많을수록 높아지고, 이보다 높은 주파수는 수직으로 쏘면 층을 뚫고 나갑니다. 실제 값은 이오노존데(ionosonde)라는 수직 탐측 장비로 측정합니다.</p>
+        <p style="font-size:.9em;margin:10px 0 0">수직 입사(vertical incidence)한 전파가 그 층에서 반사되는 최고 주파수입니다. 층의 자유 전자가 많을수록 높아지고, 이보다 높은 주파수는 수직 입사 시 층을 관통합니다. 실제 값은 이오노존데(ionosonde)라는 수직 탐측 장비로 측정합니다.</p>
         <p class="note" style="margin-top:8px;font-size:.8em">f₀ ≈ 9·√N<sub>max</sub> (Hz) — N<sub>max</sub>: 층의 최대 전자 밀도(electrons/m³)</p>
       </div>
       <div class="card read info" id="p1info"></div>
@@ -205,7 +205,7 @@ svg .mono{font-family:var(--mono)}
 <!-- ================= ② ================= -->
 <section class="panel" id="p2">
   <h2>굴절과 MUF<small>Refraction and the Maximum Usable Frequency</small></h2>
-  <p class="lead">전파가 전리층에 들어가면 자유 전자가 전파의 전기장(electric field)에 반응하면서 진행 방향이 조금씩 휘어집니다. 엄밀히는 반사가 아니라 굴절(refraction)이지만, 충분히 휘어져 지구로 돌아오면 흔히 "반사(reflection)"라고 부릅니다. 어떤 주파수가 돌아오는지는 층의 전자 밀도와 전파가 들어가는 각도에 따라 정해지며, 특정 경로에서 돌아올 수 있는 가장 높은 주파수가 최고 사용 가능 주파수(MUF, Maximum Usable Frequency)입니다.</p>
+  <p class="lead">전파가 전리층에 들어가면 자유 전자가 전파의 전기장(electric field)에 반응하면서 진행 방향이 점차 바뀝니다. 엄밀히는 반사가 아니라 굴절(refraction)이지만, 충분히 굴절되어 지구로 돌아오면 흔히 "반사(reflection)"라고 부릅니다. 어떤 주파수가 돌아오는지는 층의 전자 밀도와 전파가 들어가는 각도에 따라 정해지며, 특정 경로에서 돌아올 수 있는 가장 높은 주파수가 최고 사용 가능 주파수(MUF, Maximum Usable Frequency)입니다.</p>
 
   <div class="card">
     <div class="stage">
@@ -234,7 +234,7 @@ svg .mono{font-family:var(--mono)}
   </div>
 
   <ul class="points">
-    <li><b>임계 주파수와 MUF:</b> foF2는 수직으로 쏘았을 때의 한계입니다. 비스듬히 들어가는 전파는 더 높은 주파수까지 돌아와, MUF ≈ foF2 × sec <i>i</i>(<i>i</i>: 층에 입사하는 각도)가 됩니다. 3,000 km 경로에서는 foF2의 약 3배입니다.</li>
+    <li><b>임계 주파수와 MUF:</b> foF2는 수직 입사 기준의 한계입니다. 비스듬히 들어가는 전파는 더 높은 주파수까지 돌아와, MUF ≈ foF2 × sec <i>i</i>(<i>i</i>: 층에 입사하는 각도)가 됩니다. 3,000 km 경로에서는 foF2의 약 3배입니다.</li>
     <li><b>앙각 고정:</b> 주파수를 MUF 쪽으로 올릴수록 전리층 더 높은 곳에서 굴절하고 도달 거리가 늘어납니다. MUF를 넘으면 전리층을 관통(penetrate)합니다.</li>
     <li><b>주파수 고정:</b> 앙각을 높일수록 도달 거리가 짧아지다가, 임계 앙각(critical elevation angle)을 넘으면 관통합니다. 그 결과 송신점 주변에 공간파(sky wave)가 닿지 않는 <b>스킵 존(skip zone)</b>이 생깁니다.</li>
     <li>운용 주파수가 foF2 이하이면 수직 입사도 반사되므로 스킵 존이 없습니다. 근거리 고앙각 운용(NVIS, Near Vertical Incidence Skywave)이 이 조건을 이용합니다.</li>
@@ -280,7 +280,7 @@ svg .mono{font-family:var(--mono)}
   </div>
 
   <ul class="points">
-    <li><b>하루 변화 (diurnal variation):</b> 일출 후 MUF가 빠르게 올라 정오 무렵 최고가 되고, 밤새 서서히 내려가 일출 직전(pre-dawn) 최저가 됩니다. 밤에는 D층이 사라져 ALF가 0에 가까워지므로 160 m·80 m가 살아납니다.</li>
+    <li><b>하루 변화 (diurnal variation):</b> 일출 후 MUF가 빠르게 올라 정오 무렵 최고가 되고, 밤새 서서히 내려가 일출 직전(pre-dawn) 최저가 됩니다. 밤에는 D층이 사라져 ALF가 0에 가까워지므로 160 m·80 m의 원거리 전파가 가능해집니다.</li>
     <li><b>태양 주기 (solar cycle):</b> 약 9~14년 주기로 태양 활동이 오르내립니다. 극대기(solar maximum)에는 전자가 많아져 15 m·12 m·10 m 같은 높은 밴드가 열리고, 극소기(solar minimum)에는 낮은 밴드 위주로 운용하게 됩니다.</li>
     <li><b>계절 (seasonal variation):</b> F층 정오 주파수는 춘·추분 무렵 가장 높습니다. 태양 활동이 높을 때는 겨울 정오 MUF가 여름보다 높게 나타나는데, 이를 계절 이상 현상(seasonal anomaly)이라 합니다. D층 흡수는 여름과 한낮에 큽니다.</li>
   </ul>
@@ -618,7 +618,7 @@ const M3000=(function(){const target=3000/(2*R);let a=0.0005,b=1.5;for(let k=0;k
       tip('단일 경로',[
         '주파수 슬라이더를 올려 보면 굴절 위치가 높아지고 1홉 거리가 늘다가, 이 앙각의 F층 MUF('+fmt(mufAt(b,pr))+' MHz)를 넘는 순간 관통합니다.',
         st.day?'주간에는 낮은 주파수가 E층에서 먼저 굴절하고, ALF(약 '+pr.alf+' MHz) 아래에서는 D층 흡수로 신호가 크게 약해집니다.':'야간에는 D층이 사라져 흡수가 거의 없고, E층도 약해져 낮은 주파수도 F층까지 올라갑니다.',
-        sk.d===0&&st.beta>=60?'NVIS: 운용 주파수가 foF2보다 낮아 수직에 가깝게 쏴도 돌아옵니다. 스킵 존 없이 송신점 주변 수백 km를 고르게 덮으므로, 산이 많은 지형의 국내 근거리·비상 통신에 쓰입니다. 주간에는 40 m, 야간에는 80 m가 흔히 쓰입니다.':'흐린 선은 같은 각도로 이어지는 2·3번째 홉입니다.'
+        sk.d===0&&st.beta>=60?'NVIS: 운용 주파수가 foF2보다 낮아 수직에 가까운 앙각으로 방사해도 반사됩니다. 스킵 존 없이 송신점 주변 수백 km를 고르게 덮으므로, 산이 많은 지형의 국내 근거리·비상 통신에 쓰입니다. 주간에는 40 m, 야간에는 80 m가 흔히 쓰입니다.':'흐린 선은 같은 각도로 이어지는 2·3번째 홉입니다.'
       ]);
     } else if(st.mode==='fan'){
       const betas=[2,4,6,8,10,13,16,20,25,30,36,44,54,66,80];
@@ -694,7 +694,7 @@ const M3000=(function(){const target=3000/(2*R);let a=0.0005,b=1.5;for(let k=0;k
       tip('앙각 고정 · 주파수 변화',[
         '같은 앙각에서 160 m부터 10 m까지 아홉 밴드를 비교합니다. 아래 밴드 버튼을 누르면 그 밴드의 경로가 굵게 강조됩니다.',
         '실선은 귀환, 짧은 점선은 관통, 긴 점선은 D층 흡수입니다. 귀환하는 밴드는 주파수가 높을수록 더 높은 곳에서 굴절해 더 멀리 떨어집니다.',
-        'MUF를 넘는 밴드는 관통하는데, MUF에 가까운 밴드일수록 많이 휘어진 뒤 빠져나갑니다. 앙각을 낮추면 MUF가 올라가 더 높은 밴드까지 돌아옵니다.'
+        'MUF를 넘는 밴드는 관통하는데, MUF에 가까운 밴드일수록 더 크게 굴절된 뒤 관통합니다. 앙각을 낮추면 MUF가 올라가 더 높은 밴드까지 돌아옵니다.'
       ]);
     }
     if(isMob())bump(svg,1.45);

@@ -255,6 +255,17 @@ details[open] .cyctog .c{display:inline}
     <div class="card read"><h3>판단 근거</h3><ul class="why" id="why"></ul></div>
   </div>
 
+  <div class="card read" style="margin-top:14px">
+    <h3>다른 사이트의 밴드 표와 결과가 다른 이유</h3>
+    <p style="font-size:.9em;margin:0 0 6px">QRZ.com 등에서 널리 쓰이는 HamQSL(N0NBH) 위젯도 같은 NOAA 지표로 밴드 상태를 보여 주지만, 이 페이지와 결과가 다를 때가 많습니다. 어느 한쪽이 틀린 것이 아니라 계산 방식이 다르기 때문입니다.</p>
+    <ul class="why">
+      <li><b>넣는 값</b>: 위젯은 오늘 하루의 SFI를 그대로 쓰고, 이 페이지는 최근 7일 평균을 씁니다. SFI가 며칠 사이 빠르게 오르는 시기에는 이 페이지가 더 보수적으로, 빠르게 내려가는 시기에는 더 높게 판정됩니다. 흑점 수도 기관과 집계 시점에 따라 10 안팎 차이가 날 수 있습니다.</li>
+      <li><b>판정 기준</b>: 위젯의 판정 공식은 공개되어 있지 않고 어느 지역 기준인지도 밝히지 않습니다. 이 페이지는 한국과 같은 중위도 경로를 기준으로 하며, 특히 야간 하이 밴드(17 m 이상)를 엄격하게 봅니다.</li>
+      <li><b>지자기 반영 방식</b>: 위젯은 지자기가 약간만 불안정해도 낮은 밴드를 낮춰 보는 경향이 있고, 이 페이지는 A 30·Kp 5(지자기 폭풍 수준)부터 전 밴드를 한 단계 낮춥니다.</li>
+    </ul>
+    <p class="note" style="margin-top:8px">두 표 모두 지표로 경향을 짐작하는 경험칙이며 실제 전파 예측은 아닙니다. 실제로 열려 있는지는 그 밴드의 비컨(beacon), 리버스 비컨(reverse beacon) 수신 보고, DX 클러스터 스폿을 함께 보는 것이 가장 정확합니다.</p>
+  </div>
+
   <details class="card manual" id="manual">
     <summary><span class="act" style="display:inline-block">✎ 직접 값 넣어 보기</span><span class="sumtxt">값을 바꿔 가며 밴드 경향이 어떻게 달라지는지 확인할 수 있습니다. 실시간 자료를 불러오지 못하면 자동으로 열립니다.</span></summary>
     <div class="ctrl" style="border-top:1px solid var(--line)">
@@ -306,7 +317,7 @@ details[open] .cyctog .c{display:inline}
 <!-- ================= 지표 읽는 법 ================= -->
 <section class="sec">
   <div class="sechead"><h2>지표 읽는 법<small>How to Read Each Index</small></h2></div>
-  <p class="lead">아래 기준값은 운용자들이 흔히 쓰는 경험적 기준입니다. 한 가지 값만 보지 말고, 태양 플럭스는 "높게 유지되는지", 지자기 지수는 "조용한지"를 함께 보는 것이 요령입니다.</p>
+  <p class="lead">아래 기준값은 운용자들이 흔히 쓰는 경험적 기준입니다. 한 가지 값만 보지 말고, 태양 플럭스는 "높게 유지되는지", 지자기 지수는 "조용한지"를 함께 확인해야 합니다.</p>
 
   <div class="idx">
     <article class="card read">
@@ -318,7 +329,7 @@ details[open] .cyctog .c{display:inline}
         <tr><td>90–100</td><td><span class="lv f">보통</span> 17 m·15 m 가끔</td></tr>
         <tr><td>100–150</td><td><span class="lv g">양호</span> 15 m 주간 개방, 10 m 가끔</td></tr>
         <tr><td>150 이상</td><td><span class="lv g">매우 양호</span> 12 m·10 m 주간 개방</td></tr></table>
-      <p class="tipx">하루 반짝 높은 값보다 <b>5~7일 이상 높게 유지</b>되어야 효과가 큽니다. 그래서 이 페이지는 해석에 7일 평균을 씁니다.</p>
+      <p class="tipx">하루만 높은 값보다 <b>5~7일 이상 높게 유지</b>되어야 효과가 큽니다. 그래서 이 페이지는 해석에 7일 평균을 씁니다.</p>
     </article>
 
     <article class="card read">
@@ -346,7 +357,7 @@ details[open] .cyctog .c{display:inline}
 
     <article class="card read">
       <h3>A 지수 · Ap 지수 <small>A-index, Planetary A-index</small></h3>
-      <p>하루 동안의 K 값 8개를 선형 눈금으로 바꿔 평균한 값으로, 그날 지자기가 전반적으로 얼마나 흔들렸는지 보여 줍니다(0~400). Ap는 지구 전체 값입니다. 지금 이 순간보다 "어제부터 이어진 분위기"를 보는 지표입니다.</p>
+      <p>하루 동안의 K 값 8개를 선형 눈금으로 바꿔 평균한 값으로, 그날 지자기가 전반적으로 얼마나 흔들렸는지 보여 줍니다(0~400). Ap는 지구 전체 값입니다. 순간값이 아니라 하루 동안의 전반적인 지자기 활동 수준을 나타내는 지표입니다.</p>
       <table class="rng"><tr><th>A</th><th>상태 (NOAA 구분)</th></tr>
         <tr><td>0–7</td><td><span class="lv g">조용 (quiet)</span></td></tr>
         <tr><td>8–15</td><td><span class="lv g">약간 불안정 (unsettled)</span></td></tr>
@@ -367,7 +378,7 @@ details[open] .cyctog .c{display:inline}
 
     <article class="card read">
       <h3>행성간 자기장 Bz <small>IMF Bz</small></h3>
-      <p>태양풍에 실려 오는 자기장의 남북 성분입니다. 값이 음수(남쪽 방향)이면 지구 자기장과 맞물려 태양풍 에너지가 쉽게 들어오므로, 음수가 몇 시간 이상 이어지면 지자기 폭풍이 올 가능성이 커집니다. Kp보다 먼저 움직이는 "예고 신호"로 봅니다.</p>
+      <p>태양풍에 실려 오는 자기장의 남북 성분입니다. 값이 음수(남쪽 방향)이면 지구 자기장과 맞물려 태양풍 에너지가 쉽게 들어오므로, 음수가 몇 시간 이상 이어지면 지자기 폭풍이 올 가능성이 커집니다. Kp보다 먼저 변하므로 지자기 폭풍의 선행 지표로 활용합니다.</p>
       <table class="rng"><tr><th>Bz (nT)</th><th>참고 기준</th></tr>
         <tr><td>0 이상</td><td><span class="lv g">북쪽, 안정</span></td></tr>
         <tr><td>0 ~ −5</td><td><span class="lv g">약간 남쪽</span></td></tr>
@@ -401,7 +412,7 @@ details[open] .cyctog .c{display:inline}
   <h3 class="sub">더 보기 <small>Further Resources</small></h3>
   <ul class="points">
     <li><a href="https://www.swpc.noaa.gov/" target="_blank" rel="noopener">NOAA Space Weather Prediction Center</a> — 이 페이지 자료의 출처, 경보와 3일 예보</li>
-    <li><a href="https://www.hamqsl.com/solar.html" target="_blank" rel="noopener">HamQSL Solar-Terrestrial Data</a> — 블로그·QRZ 페이지에 많이 붙이는 전파 예보 위젯</li>
+    <li><a href="https://www.hamqsl.com/solar.html" target="_blank" rel="noopener">HamQSL Solar-Terrestrial Data</a> — 블로그와 QRZ.com 프로필에서 널리 쓰이는 전파 예보 위젯</li>
     <li>국립전파연구원 우주전파센터 — 국내 이오노존데(이천·제주) 전리층 관측과 우주전파환경 경보</li>
   </ul>
 </section>
@@ -546,7 +557,7 @@ function renderMetrics(){
   /* A */
   const a30=(D.dgd||[]).filter(r=>r.A>=0).slice(-30);
   box.append(metric({name:'A 지수 (Ap)',en:'Planetary A-index',val:D.A,lv:D.A!=null?LV.a(D.A):null,
-    desc:D.Atoday!=null?`오늘 추정 ${D.Atoday} — 하루 동안의 지자기 분위기`:'하루 동안의 지자기 분위기',
+    desc:D.Atoday!=null?`오늘 추정 ${D.Atoday} — 하루 동안의 지자기 활동 수준`:'하루 동안의 지자기 활동 수준',
     svg:a30.length?spark(a30.map(r=>r.A),{bars:true,min:0,max:Math.max(50,...a30.map(r=>r.A)),color:v=>v<16?'var(--ret)':v<30?'var(--marg)':'var(--pen)',cap:'최근 30일',refs:[{v:30,t:'30',c:'var(--pen)'}]}):null,
     when:D.Adate?'기준일 '+D.Adate+' (전날 확정값)':''}));
   /* X-ray */
@@ -733,7 +744,7 @@ function renderO27(){
     li.push(`<b>지자기 폭풍 예상일</b>: ${parts.join(', ')}.`);}
   else li.push('<b>지자기</b>: 이 기간에는 Kp 5 이상 날이 예측되지 않았습니다.');
   const quiet=O.rows.filter(r=>r.kp<=2&&r.sfi>=Math.max(100,mx.sfi-15));
-  if(quiet.length)li.push(`<b>조용하고 SFI도 높은 날</b>: ${quiet.slice(0,6).map(r=>md(r.d)).join(', ')} — 원거리 교신에 좋은 후보일입니다.`);
+  if(quiet.length)li.push(`<b>조용하고 SFI도 높은 날</b>: ${quiet.slice(0,6).map(r=>md(r.d)).join(', ')} — 원거리 교신에 유리한 날입니다.`);
   $('#o27sum').innerHTML=li.map(x=>'<li>'+x+'</li>').join('');
 }
 /* ---------- mini solar cycle (summary row) ---------- */
