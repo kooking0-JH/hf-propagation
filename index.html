@@ -180,10 +180,10 @@ svg .mono{font-family:var(--mono)}
   <div class="grid2">
     <div class="card">
       <div class="stage"><svg id="p1svg" viewBox="0 0 760 470" aria-label="고도별 전자 밀도 단면"></svg>
-        <div class="cap">고도별 전자 밀도 단면(electron density profile)과 각 영역의 범위. 춘·추분, 중위도, 태양 흑점 수 100 기준 모형.</div>
+        <div class="cap">고도별 전자 밀도 단면(electron density profile)과 각 영역의 범위. 춘·추분, 중위도, 태양 흑점 수 100 기준 모형. 시각은 해가 가장 높이 뜨는 때를 12:00으로 잡은 지방 태양시이며, 서울에서는 한국 표준시보다 약 30분 이릅니다(그림의 12:00 ≈ 한국시간 12:30).</div>
       </div>
       <div class="ctrl">
-        <div style="grid-column:1/-1"><label>시각 (지방시, local time) <output id="p1to">12:00</output></label><input type="range" id="p1t" min="0" max="24" step="0.1" value="12">
+        <div style="grid-column:1/-1"><label>시각 (지방 태양시, local solar time) <output id="p1to">12:00</output></label><input type="range" id="p1t" min="0" max="24" step="0.1" value="12">
           <div class="btnrow"><button type="button" class="act" id="p1play">▶ 하루 재생</button>
             <div class="chips" id="p1pre"><button type="button" data-v="12">정오 12:00</button><button type="button" data-v="19.5">일몰 직후 19:30</button><button type="button" data-v="0">자정 00:00</button><button type="button" data-v="5.5">일출 전 05:30</button></div></div>
         </div>
@@ -265,7 +265,7 @@ svg .mono{font-family:var(--mono)}
         <span><i style="background:var(--abs);opacity:.6"></i>D층 흡수 (absorbed)</span>
         <span><i style="background:var(--closed)"></i>관통 (closed)</span>
       </div>
-      <div class="cap">중위도(북위 약 35°) 3,000 km 경로 기준 24시간 변화와 아마추어 밴드별 상태. 음영은 야간.</div>
+      <div class="cap">중위도(북위 약 35°) 3,000 km 경로 기준 24시간 변화와 아마추어 밴드별 상태. 음영은 야간. 시각은 해가 가장 높이 뜨는 때를 12:00으로 잡은 지방 태양시이며, 서울에서는 한국 표준시보다 약 30분 이릅니다(그림의 12:00 ≈ 한국시간 12:30).</div>
     </div>
     <div class="ctrl">
       <div><label>태양 흑점 수 SSN (sunspot number) <output id="p3so">100</output></label><input type="range" id="p3s" min="0" max="200" step="1" value="100">
@@ -273,7 +273,7 @@ svg .mono{font-family:var(--mono)}
       <div><label>계절</label>
         <div class="seg" id="p3season"><button data-v="summer">여름<small>Summer</small></button><button class="on" data-v="equinox">춘·추분<small>Equinox</small></button><button data-v="winter">겨울<small>Winter</small></button></div>
       </div>
-      <div><label>시각 (지방시) <output id="p3to">12:00</output></label><input type="range" id="p3t" min="0" max="24" step="0.1" value="12">
+      <div><label>시각 (지방 태양시, local solar time) <output id="p3to">12:00</output></label><input type="range" id="p3t" min="0" max="24" step="0.1" value="12">
         <button type="button" class="act" id="p3play" style="margin-top:10px">▶ 하루 재생</button></div>
     </div>
   </div>
@@ -773,7 +773,7 @@ const M3000=(function(){const target=3000/(2*R);let a=0.0005,b=1.5;for(let k=0;k
     for(let h=0;h<=24;h+=(isMob()?6:3)){const x=xOf(h);S('line',{x1:x,y1:Y1,x2:x,y2:Y1+5,stroke:'var(--muted)'},svg);T(svg,x,Y1+20,String(h).padStart(2,'0')+':00',{'text-anchor':'middle','font-size':11,fill:'var(--muted)',class:'mono'});}
     for(let f=0;f<=FMAX;f+=10){const y=yOf(f);S('line',{x1:X0,y1:y,x2:X1,y2:y,stroke:'var(--line)','stroke-dasharray':f?'2 4':'none'},svg);T(svg,X0-8,y+4,String(f),{'text-anchor':'end','font-size':11,fill:'var(--muted)',class:'mono'});}
     T(svg,18,(Y0+Y1)/2,'주파수 (MHz)',{'text-anchor':'middle','font-size':12,fill:'var(--muted)',transform:'rotate(-90 18 '+((Y0+Y1)/2)+')'});
-    T(svg,(X0+X1)/2,Y1+40,'지방시 (local time)',{'text-anchor':'middle','font-size':12,fill:'var(--muted)'});
+    T(svg,(X0+X1)/2,Y1+40,'지방 태양시 (local solar time)',{'text-anchor':'middle','font-size':12,fill:'var(--muted)'});
     /* band timelines */
     BANDS.forEach(bd=>{
       const y=yOf(bd[1]);let seg0=0,s0=status(bd[1],m,0);
@@ -864,7 +864,7 @@ const M3000=(function(){const target=3000/(2*R);let a=0.0005,b=1.5;for(let k=0;k
     for(let v=0;v>=YMIN;v-=10){const y=yOf(v);S('line',{x1:X0,y1:y,x2:X1,y2:y,stroke:'var(--line)','stroke-dasharray':v?'2 4':'none'},svg);T(svg,X0-8,y+4,String(v),{'text-anchor':'end','font-size':11,fill:'var(--muted)',class:'mono'});}
     const t0=Math.ceil(ev.t0/ev.tick)*ev.tick;
     const tk=ev.tick*(isMob()&&cur==='es'?2:1);for(let t=t0;t<=ev.t1+1e-9;t+=tk){const x=xOf(t);S('line',{x1:x,y1:Y1,x2:x,y2:Y1+5,stroke:'var(--muted)'},svg);T(svg,x,Y1+20,(cur==='es'?String(t).padStart(2,'0')+':00':String(t)),{'text-anchor':'middle','font-size':11,fill:'var(--muted)',class:'mono'});}
-    T(svg,(X0+X1)/2,Y1+42,cur==='es'?'지방시':'시간 ('+ev.unit+')',{'text-anchor':'middle','font-size':12,fill:'var(--muted)'});
+    T(svg,(X0+X1)/2,Y1+42,cur==='es'?'지방 태양시':'시간 ('+ev.unit+')',{'text-anchor':'middle','font-size':12,fill:'var(--muted)'});
     {const yx=isMob()?14:20;T(svg,yx,(Y0+Y1)/2,isMob()?'상대 신호 세기 (dB)':'상대 신호 세기 (relative signal, dB)',{'text-anchor':'middle','font-size':12,fill:'var(--muted)',transform:'rotate(-90 '+yx+' '+((Y0+Y1)/2)+')'});}
     if(ev.mark){const x=xOf(ev.mark[0]);S('line',{x1:x,y1:Y0,x2:x,y2:Y1,stroke:'var(--ink)','stroke-dasharray':'4 3'},svg);T(svg,x+6,Y1-8,ev.mark[1],{'font-size':11,fill:'var(--ink)'});}
     FREQ.forEach(fr=>{
