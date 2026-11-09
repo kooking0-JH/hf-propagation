@@ -80,16 +80,27 @@ header.hero p{color:var(--muted);margin:10px 0 0;max-width:760px}
 .ctrl label{display:block;font-size:.86em;color:var(--muted);margin-bottom:4px}
 .ctrl label output{float:right;font-family:var(--mono);color:var(--ink);font-weight:600}
 input[type=range]{width:100%;accent-color:var(--accent)}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;flex-wrap:wrap}
-.seg button{appearance:none;border:0;background:var(--panel);color:var(--muted);font:inherit;font-size:.88em;padding:6px 12px;cursor:pointer}
-.seg button+button{border-left:1px solid var(--line)}
-.seg button.on{background:var(--accent);color:var(--accent-ink)}
-.seg button small{display:block;font-size:.74em;line-height:1.25;opacity:.72;margin-top:1px;letter-spacing:.01em}
-.seg button{line-height:1.35;text-align:center}
-@media (max-width:640px){.seg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,128px),1fr));width:100%}.seg button+button{border-left:0}.seg button{box-shadow:0 0 0 .5px var(--line);padding:7px 8px}}
-.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
-.chips button{appearance:none;border:1px solid var(--line);background:var(--panel);color:var(--muted);font-family:var(--mono);font-size:.76em;padding:2px 7px;border-radius:6px;cursor:pointer}
-.chips button.on{border-color:var(--accent);color:var(--accent)}
+.seg{display:inline-flex;border:1.5px solid var(--line);border-radius:10px;overflow:hidden;flex-wrap:wrap;background:var(--panel);box-shadow:0 2px 0 var(--line)}
+.seg button{appearance:none;border:0;background:var(--panel);color:var(--ink);font:inherit;font-size:.88em;font-weight:500;padding:7px 14px;cursor:pointer;line-height:1.35;text-align:center;transition:background .12s}
+.seg button+button{border-left:1.5px solid var(--line)}
+.seg button:hover{background:color-mix(in srgb,var(--accent) 9%,var(--panel))}
+.seg button.on{background:var(--accent);color:var(--accent-ink);font-weight:700}
+.seg button small{display:block;font-size:.74em;font-weight:400;line-height:1.25;opacity:.72;margin-top:1px;letter-spacing:.01em}
+@media (max-width:640px){.seg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,128px),1fr));width:100%}.seg button+button{border-left:0}.seg button{box-shadow:0 0 0 .75px var(--line);padding:8px 8px}}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chips button{appearance:none;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);font-family:var(--mono);font-size:.78em;font-weight:500;padding:4px 10px;border-radius:8px;cursor:pointer;box-shadow:0 2px 0 var(--line);transition:border-color .12s,background .12s}
+.chips button:hover{border-color:var(--accent)}
+.chips button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);box-shadow:0 2px 0 color-mix(in srgb,var(--accent) 60%,#000)}
+.act{appearance:none;font:inherit;font-size:.88em;font-weight:700;color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--panel));border:1.5px solid var(--accent);border-radius:10px;padding:6px 14px;cursor:pointer;box-shadow:0 2px 0 color-mix(in srgb,var(--accent) 45%,transparent);transition:background .12s;text-align:left;line-height:1.35}
+.act:hover{background:color-mix(in srgb,var(--accent) 18%,var(--panel))}
+.act.on{background:var(--accent);color:var(--accent-ink)}
+.act small{display:block;font-weight:400;font-size:.8em;opacity:.8}
+.btnrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:10px}
+.btnrow .chips{margin-top:0}
+.seg button:active,.chips button:active,.act:active,.legbtn:active,.tab:active{transform:translateY(2px);box-shadow:none}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#p1svg .rgn{cursor:pointer}
+#p1svg .rgn:hover .pill{stroke-width:2.5}
 .grid2{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:14px;margin-top:14px}
 @media (max-width:760px){.grid2{grid-template-columns:1fr}}
 .read{padding:14px 16px}
@@ -101,7 +112,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .points{margin:14px 0 0;padding:14px 18px 14px 34px;background:var(--soft);border-radius:12px}
 .points li{margin:3px 0}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.84em;color:var(--muted);padding:0 4px;margin-top:8px}
-.legbtn{appearance:none;font:inherit;font-size:1em;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:7px;padding:3px 9px;cursor:pointer}
+.legbtn{appearance:none;font:inherit;font-size:1em;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:4px 10px;cursor:pointer;box-shadow:0 2px 0 var(--line)}
 .legbtn:hover{border-color:var(--accent)}
 .legbtn.on{color:var(--ink);font-weight:700;border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
 .legend i{display:inline-block;width:14px;height:4px;border-radius:2px;vertical-align:middle;margin-right:6px}
@@ -130,7 +141,6 @@ table.cmp thead th{color:var(--ink);font-weight:700}
 footer{border-top:1px solid var(--line);margin-top:30px;padding:16px 0 40px;color:var(--muted);font-size:.84em}
 svg text{font-family:'Noto Sans KR',system-ui,sans-serif}
 svg .mono{font-family:var(--mono)}
-.playbtn{appearance:none;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:4px 12px;font:inherit;font-size:.86em;cursor:pointer;margin-top:6px}
 </style>
 </head>
 <body>
@@ -139,7 +149,7 @@ svg .mono{font-family:var(--mono)}
   <div class="brand">HF 전파 전파 해설<small>HF Propagation</small></div>
   <nav>
     <a class="on" href="index.html">전리층 원리</a>
-    <a class="soon" aria-disabled="true" title="준비 중">전파 예보 읽기<em>준비 중</em></a>
+    <a href="forecast.html">전파 예보 읽기</a>
   </nav>
 </div></div>
 
@@ -165,13 +175,13 @@ svg .mono{font-family:var(--mono)}
   <div class="grid2">
     <div class="card">
       <div class="stage"><svg id="p1svg" viewBox="0 0 760 470" aria-label="고도별 전자 밀도 단면"></svg>
-        <div class="cap">고도별 전자 밀도 단면(electron density profile)과 각 영역의 범위. 영역을 누르면 설명 표시.</div>
+        <div class="cap">고도별 전자 밀도 단면(electron density profile)과 각 영역의 범위. 춘·추분, 중위도, 태양 흑점 수 100 기준 모형.</div>
       </div>
       <div class="ctrl">
-        <div><label>시간대</label>
-          <div class="seg" id="p1day"><button class="on" data-v="0">주간<small>Day</small></button><button data-v="1">야간<small>Night</small></button></div>
+        <div style="grid-column:1/-1"><label>시각 (지방시, local time) <output id="p1to">12:00</output></label><input type="range" id="p1t" min="0" max="24" step="0.1" value="12">
+          <div class="btnrow"><button type="button" class="act" id="p1play">▶ 하루 재생</button>
+            <div class="chips" id="p1pre"><button type="button" data-v="12">정오 12:00</button><button type="button" data-v="19.5">일몰 직후 19:30</button><button type="button" data-v="0">자정 00:00</button><button type="button" data-v="5.5">일출 전 05:30</button></div></div>
         </div>
-        <div><label>낮 → 밤 전환 <output id="p1to">0%</output></label><input type="range" id="p1t" min="0" max="100" value="0"></div>
       </div>
     </div>
     <div style="display:flex;flex-direction:column;gap:14px">
@@ -188,7 +198,7 @@ svg .mono{font-family:var(--mono)}
   <ul class="points">
     <li><b>D 영역</b>은 HF 전파를 굴절시키지 않고 흡수(absorption)합니다. 낮에만 존재하며, 낮은 주파수일수록 흡수가 큽니다.</li>
     <li><b>E·F1·F2 영역</b>만 HF 전파를 굴절(refraction)시킵니다. F1은 F2와 합쳐지는 경우가 많아 전파 모드(propagation mode) 검토에서는 보통 F2만 F 영역으로 다룹니다.</li>
-    <li>밤에는 D·E·F1 영역의 자유 전자가 크게 줄고 <b>F2 영역만 남습니다.</b> 전자 수명(electron lifetime)은 E 약 20초, F1 약 1분, F2 약 20분입니다.</li>
+    <li>밤에는 D·E·F1 영역의 자유 전자가 크게 줄고 <b>F2 영역만 남습니다.</b> 전자 수명(electron lifetime)은 E 약 20초, F1 약 1분, F2 약 20분입니다. 그래서 D·E·F1은 해를 따라 거의 즉시 생기고 사라지지만, F2는 해가 진 뒤에도 밤새 천천히 줄어듭니다. "하루 재생"으로 확인해 보세요.</li>
   </ul>
 </section>
 
@@ -211,7 +221,7 @@ svg .mono{font-family:var(--mono)}
         <div class="seg" id="p2day"><button class="on" data-v="day">주간<small>Day</small></button><button data-v="night">야간<small>Night</small></button></div>
       </div>
       <div><label>F2 임계 주파수 foF2 <output id="p2foo">9.0 MHz</output></label><input type="range" id="p2fo" min="2" max="14" step="0.1" value="9"></div>
-      <div style="grid-column:1/-1"><label>빠른 예시</label><div class="chips" style="margin-top:0"><button type="button" id="p2nvis" style="font-family:inherit;font-size:.86em;padding:4px 10px">NVIS 근거리 통신 (Near Vertical Incidence Skywave) · 야간 80 m · 앙각 80°</button></div></div>
+      <div style="grid-column:1/-1"><label>빠른 예시 — NVIS 근거리 통신 (Near Vertical Incidence Skywave)</label><div class="btnrow" style="margin-top:4px"><button type="button" class="act" id="p2nvisD">▸ 주간 NVIS<small>40 m · 앙각 80° · foF2 9 MHz</small></button><button type="button" class="act" id="p2nvisN">▸ 야간 NVIS<small>80 m · 앙각 80° · foF2 5 MHz</small></button></div></div>
       <div id="p2fwrap"><label>운용 주파수 <output id="p2fout">14.20 MHz</output></label><input type="range" id="p2f" min="1.8" max="30" step="0.05" value="14.2">
         <div class="chips" id="p2chips"></div></div>
       <div id="p2bwrap"><label>방사 앙각 (elevation angle) <output id="p2bout">15°</output></label><input type="range" id="p2b" min="1" max="89" step="1" value="15"></div>
@@ -259,7 +269,7 @@ svg .mono{font-family:var(--mono)}
         <div class="seg" id="p3season"><button data-v="summer">여름<small>Summer</small></button><button class="on" data-v="equinox">춘·추분<small>Equinox</small></button><button data-v="winter">겨울<small>Winter</small></button></div>
       </div>
       <div><label>시각 (지방시) <output id="p3to">12:00</output></label><input type="range" id="p3t" min="0" max="24" step="0.1" value="12">
-        <button class="playbtn" id="p3play">▶ 하루 재생</button></div>
+        <button type="button" class="act" id="p3play" style="margin-top:10px">▶ 하루 재생</button></div>
     </div>
   </div>
 
@@ -354,8 +364,6 @@ $$('.tab').forEach(b=>b.addEventListener('click',()=>{
   const X0=86,X1=730,Y0=22,Y1=420;
   const xOf=n=>X0+(Math.log10(Math.max(n,10))-1)/6*(X1-X0);
   const yOf=h=>Y1-h/500*(Y1-Y0);
-  const DAY=[{k:'D',Nm:2.5e3,hm:78,H:7},{k:'E',Nm:1.5e5,hm:110,H:9},{k:'F1',Nm:3.2e5,hm:180,H:20},{k:'F2',Nm:1.2e6,hm:300,H:55}];
-  const NIGHT=[{k:'D',Nm:12,hm:78,H:7},{k:'E',Nm:4e3,hm:108,H:9},{k:'F1',Nm:600,hm:180,H:20},{k:'F2',Nm:3e5,hm:320,H:60}];
   const REG=[
     {k:'D',lo:50,hi:90,c:'var(--d)',name:'D 영역 (D region)',
      txt:'HF 전파를 굴절시키지 않고 흡수합니다. 주파수가 낮을수록 흡수가 커서, 낮 동안 160 m·80 m 신호가 약해지는 주원인입니다. 태양 복사가 사라지면 거의 소멸하므로 밤에는 흡수가 매우 작아집니다.',life:'—'},
@@ -366,27 +374,53 @@ $$('.tab').forEach(b=>b.addEventListener('click',()=>{
     {k:'F2',lo:210,hi:500,c:'var(--f2)',name:'F2 영역 (F2 region)',
      txt:'HF 전파에서 가장 중요한 영역입니다. 24시간 존재하고, 고도가 가장 높아 가장 긴 도약(1홉 최대 약 3,200 km)을 만들며, HF 대역에서 가장 높은 주파수를 반사합니다. 전자 수명이 길어 밤에도 남습니다.',life:'약 20분'}
   ];
-  let t=0,target=0,sel='F2',anim=null;
+  let t=12,sel='F2',timer=null;
+  const SR=6.3,SS=18.6;
   const chap=(h,L)=>{const z=(h-L.hm)/L.H;return L.Nm*Math.exp(0.5*(1-z-Math.exp(-z)));};
-  function layers(tt){return DAY.map((d,i)=>{const n=NIGHT[i];return {k:d.k,Nm:Math.pow(10,lerp(Math.log10(d.Nm),Math.log10(n.Nm),tt)),hm:lerp(d.hm,n.hm,tt),H:lerp(d.H,n.H,tt)};});}
+  /* 태양 천정각 계수(정오 1) */
+  const sunC=tt=>(tt<=SR||tt>=SS)?0:Math.sin(Math.PI*(tt-SR)/(SS-SR));
+  const dayF=tt=>smooth((tt-SR+0.4)/0.8)*(1-smooth((tt-SS+0.4)/0.8));
+  /* F2: 수명이 길어 해를 늦게 따라가는 foF2 (③ 탭 모형과 같은 형태, 흑점 수 100) */
+  function foF2(tt){const noon=10.08,night=3.8,eve=Math.min(night*1.45,noon*0.9),te=SS+2.5;
+    const track=x=>{if(x>=SR&&x<=te)return lerp(night,eve,(x-SR)/(te-SR));const y=x<SR?x+24:x;return lerp(eve,night,(y-te)/(SR+24-te));};
+    const w=smooth((tt-SR)/3.2)*(1-smooth((tt-(SS-1.0))/3.5));const tr=track(tt);return tr+(noon-tr)*w;}
+  function layers(tt){
+    const c=sunC(tt),dl=dayF(tt),f2=foF2(tt);
+    return [
+      {k:'D',Nm:12+2.5e3*c,hm:78,H:7},
+      {k:'E',Nm:4e3+1.5e5*Math.sqrt(c),hm:110,H:9},
+      {k:'F1',Nm:600+3.2e5*Math.sqrt(c),hm:180,H:20},
+      {k:'F2',Nm:Math.pow(f2/8.98e-3,2),hm:300+25*(1-dl),H:55+5*(1-dl)}
+    ];
+  }
   function ne(h,Ls){let s=0;for(const L of Ls)s+=chap(h,L);return s;}
+  function hm(x){x=((x%24)+24)%24;const h=Math.floor(x),m=Math.round((x-h)*60);return String(m===60?h+1:h).padStart(2,'0')+':'+String(m===60?0:m).padStart(2,'0');}
 
   function draw(){
     svg.replaceChildren();
-    const Ls=layers(t);
+    const Ls=layers(t), c=sunC(t), night=c<=0;
     const defs=S('defs',null,svg);
     const g0=S('linearGradient',{id:'p1sky',x1:0,y1:0,x2:0,y2:1},defs);
     S('stop',{offset:0,'stop-color':'var(--sky2)'},g0);S('stop',{offset:1,'stop-color':'var(--sky1)'},g0);
     S('rect',{x:X0,y:Y0,width:X1-X0,height:Y1-Y0,fill:'url(#p1sky)',stroke:'var(--line)'},svg);
-    /* region bands */
-    const vis={D:1-t,E:1-0.55*t,F1:1-t,F2:1};
+    if(night)S('rect',{x:X0,y:Y0,width:X1-X0,height:Y1-Y0,fill:'var(--night)'},svg);
+    /* region bands + pill labels (clickable) */
+    const pres={D:c>0.02,E:true,F1:c>0.06,F2:true};
+    const vis={D:c,E:0.35+0.65*Math.sqrt(c),F1:Math.sqrt(c),F2:1};
     REG.forEach(r=>{
-      const op=vis[r.k];
-      const rect=S('rect',{x:X0,y:yOf(r.hi),width:X1-X0,height:yOf(r.lo)-yOf(r.hi),fill:r.c,'fill-opacity':(sel===r.k?0.2:0.1)*Math.max(op,0.25),stroke:sel===r.k?r.c:'none','stroke-width':1.5,style:'cursor:pointer'},svg);
-      rect.addEventListener('click',()=>{sel=r.k;draw();});
-      const lab=T(svg,X0+10,yOf((r.lo+Math.min(r.hi,r.k==='F2'?300:r.hi))/2)+5,r.k+(op<0.45&&r.k!=='E'?'  (야간 소멸)':''),{fill:r.c,'font-size':14,'font-weight':700,opacity:Math.max(op,0.55),style:'cursor:pointer'});
-      lab.addEventListener('click',()=>{sel=r.k;draw();});
+      const op=vis[r.k], on=sel===r.k;
+      const g=S('g',{class:'rgn'},svg);
+      S('rect',{class:'band',x:X0,y:yOf(r.hi),width:X1-X0,height:yOf(r.lo)-yOf(r.hi),fill:r.c,'fill-opacity':(on?0.22:0.1)*Math.max(op,0.25),stroke:on?r.c:'none','stroke-width':1.5},g);
+      const label=r.k+(pres[r.k]?'':' · 야간 소멸')+'  ›';
+      const ly=yOf((r.lo+Math.min(r.hi,r.k==='F2'?300:r.hi))/2);
+      const kk=isMob()?1.25:1, w=(label.length*7.6+18)*kk;
+      S('rect',{class:'pill',x:X0+8,y:ly-11*kk,width:w,height:22*kk,rx:11*kk,fill:on?r.c:'var(--panel)',stroke:r.c,'stroke-width':1.5},g);
+      T(g,X0+8+w/2,ly+4.5*kk,label,{'text-anchor':'middle',fill:on?'#fff':r.c,'font-size':12.5,'font-weight':700});
+      g.addEventListener('click',()=>{sel=r.k;draw();});
     });
+    T(svg,X1-8,Y1-10,'👆 영역 이름을 누르면 설명',{'text-anchor':'end','font-size':12,fill:'var(--muted)'});
+    /* clock */
+    T(svg,X0+10,Y0+24,(night?'☾ ':'☀ ')+hm(t)+(night?'  야간':'  주간'),{'text-anchor':'start','font-size':15,'font-weight':700,fill:night?'var(--f2)':'var(--abs)',class:'mono'});
     /* grid */
     for(let e=1;e<=7;e++){const x=xOf(Math.pow(10,e));S('line',{x1:x,y1:Y0,x2:x,y2:Y1,stroke:'var(--line)','stroke-dasharray':'2 4'},svg);T(svg,x,Y1+18,'10'+SUP[e],{'text-anchor':'middle','font-size':12,fill:'var(--muted)',class:'mono'});}
     for(let h=0;h<=500;h+=100){const y=yOf(h);S('line',{x1:X0-5,y1:y,x2:X0,y2:y,stroke:'var(--muted)'},svg);T(svg,X0-9,y+4,String(h),{'text-anchor':'end','font-size':12,fill:'var(--muted)',class:'mono'});}
@@ -401,31 +435,37 @@ $$('.tab').forEach(b=>b.addEventListener('click',()=>{
     [['E',95,140,'foE'],['F1',150,215,'foF1'],['F2',220,480,'foF2']].forEach(([k,lo,hi,name])=>{
       let best=0,bh=lo;for(let h=lo;h<=hi;h+=1){const n=ne(h,Ls);if(n>best){best=n;bh=h;}}
       const L=Ls.find(x=>x.k===k);
-      const present = k==='F2' || L.Nm>(k==='E'?2e4:5e4);
+      const present = k==='F2' || (k==='E'?L.Nm>2e4:c>0.15);
       const dt=document.createElement('dt');dt.textContent=name;const dd=document.createElement('dd');
-      if(present && (k!=='F1' || t<0.6)){
+      if(present){
         const f=fp(best);dd.textContent=fmt(f)+' MHz';
         const x=xOf(best),y=yOf(bh);
         const col=REG.find(r=>r.k===k).c;
         S('circle',{cx:x,cy:y,r:4.5,fill:col,stroke:'var(--panel)','stroke-width':1.5},svg);
         T(svg,x+9,y-6,name+' '+fmt(f)+' MHz',{'font-size':12,fill:col,'font-weight':700,class:'mono'});
-      } else dd.textContent='—';
+      } else dd.textContent='— (소멸)';
       kv.append(dt,dd);
     });
     /* info */
     const r=REG.find(x=>x.k===sel);
     const info=$('#p1info');
-    info.innerHTML='';
+    info.replaceChildren();
     const h3=document.createElement('h3');h3.textContent=r.name;h3.style.color=r.c;
     const tag=document.createElement('div');tag.className='tag';tag.textContent='고도 '+r.lo+'–'+(r.k==='F2'?'500+':r.hi)+' km · 전자 수명 '+r.life;
     const p=document.createElement('p');p.textContent=r.txt;
     info.append(h3,tag,p);
-    $('#p1t').value=Math.round(t*100);$('#p1to').textContent=Math.round(t*100)+'%';
+    $('#p1t').value=t;$('#p1to').textContent=hm(t)+(night?' (야간)':' (주간)');
+    $$('#p1pre button').forEach(b=>b.classList.toggle('on',Math.abs(+b.dataset.v-t)<0.05));
+    if(isMob())bump(svg,1.25);
   }
-  function animateTo(v){target=v;if(anim)cancelAnimationFrame(anim);
-    const step=()=>{const dlt=target-t;if(Math.abs(dlt)<0.01){t=target;draw();return;}t+=dlt*0.12;draw();anim=requestAnimationFrame(step);};step();}
-  segBind('p1day',v=>animateTo(+v));
-  $('#p1t').addEventListener('input',e=>{if(anim)cancelAnimationFrame(anim);t=e.target.value/100;segSet('p1day',t>=0.5?1:0);draw();});
+  const stop=()=>{if(timer){clearInterval(timer);timer=null;$('#p1play').textContent='▶ 하루 재생';}};
+  $('#p1t').addEventListener('input',e=>{stop();t=+e.target.value;draw();});
+  $('#p1pre').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;stop();t=+b.dataset.v;draw();});
+  $('#p1play').addEventListener('click',()=>{
+    if(timer){stop();return;}
+    $('#p1play').textContent='■ 정지';
+    timer=setInterval(()=>{t=+(t+0.1).toFixed(1);if(t>24)t=0;draw();},70);
+  });
   renderers.p1=draw;draw();
 })();
 
@@ -651,14 +691,16 @@ const M3000=(function(){const target=3000/(2*R);let a=0.0005,b=1.5;for(let k=0;k
     $('#p2fwrap').style.display=st.mode==='cmp'?'none':'';
     $('#p2bwrap').style.display=st.mode==='fan'?'none':'';
     $$('#p2chips button').forEach(c=>c.classList.toggle('on',Math.abs(+c.dataset.v-st.f)<0.01));
-    $('#p2nvis').classList.toggle('on',st.mode==='single'&&!st.day&&Math.abs(st.f-3.6)<0.01&&st.beta===80);
+    $('#p2nvisD').classList.toggle('on',st.mode==='single'&&st.day&&Math.abs(st.f-7.1)<0.01&&st.beta===80&&st.foF2===9);
+    $('#p2nvisN').classList.toggle('on',st.mode==='single'&&!st.day&&Math.abs(st.f-3.6)<0.01&&st.beta===80&&st.foF2===5);
   }
   function tip(title,lines){$('#p2th').textContent='읽는 법 — '+title;const box=$('#p2tip');box.replaceChildren();lines.forEach(l=>{const p=document.createElement('p');p.style.margin='0 0 6px';p.textContent=l;box.append(p);});}
   const chips=$('#p2chips');BANDS.forEach(bd=>{const c=document.createElement('button');c.textContent=bd[0];c.dataset.v=bd[1];chips.append(c);});
   chips.addEventListener('click',e=>{const c=e.target.closest('button');if(!c)return;st.f=+c.dataset.v;$('#p2f').value=st.f;draw();});
   segBind('p2mode',v=>{st.mode=v;draw();});
-  $('#p2nvis').addEventListener('click',()=>{st.mode='single';st.day=false;st.foF2=5;st.f=3.6;st.beta=80;
-    segSet('p2mode','single');segSet('p2day','night');$('#p2fo').value=5;$('#p2f').value=3.6;$('#p2b').value=80;draw();});
+  const nvis=(day)=>{st.mode='single';st.day=day;st.foF2=day?9:5;st.f=day?7.1:3.6;st.beta=80;
+    segSet('p2mode','single');segSet('p2day',day?'day':'night');$('#p2fo').value=st.foF2;$('#p2f').value=st.f;$('#p2b').value=80;draw();};
+  $('#p2nvisD').addEventListener('click',()=>nvis(true));$('#p2nvisN').addEventListener('click',()=>nvis(false));
   segBind('p2day',v=>{st.day=v==='day';st.foF2=st.day?9:5;$('#p2fo').value=st.foF2;draw();});
   $('#p2fo').addEventListener('input',e=>{st.foF2=+e.target.value;draw();});
   $('#p2f').addEventListener('input',e=>{st.f=+e.target.value;draw();});
