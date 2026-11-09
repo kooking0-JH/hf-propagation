@@ -96,6 +96,9 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .points{margin:14px 0 0;padding:14px 18px 14px 34px;background:var(--soft);border-radius:12px}
 .points li{margin:3px 0}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.84em;color:var(--muted);padding:0 4px;margin-top:8px}
+.legbtn{appearance:none;font:inherit;font-size:1em;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:7px;padding:3px 9px;cursor:pointer}
+.legbtn:hover{border-color:var(--accent)}
+.legbtn.on{color:var(--ink);font-weight:700;border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
 .legend i{display:inline-block;width:14px;height:4px;border-radius:2px;vertical-align:middle;margin-right:6px}
 .bandlist{width:100%;border-collapse:collapse;font-size:.88em}
 .bandlist td{padding:4px 2px;border-bottom:1px solid var(--line)}
@@ -323,6 +326,11 @@ function segSet(id,v){document.getElementById(id).querySelectorAll('button').for
 
 /* ---------- tabs ---------- */
 const renderers={};
+const MQ=window.matchMedia('(max-width:640px)');
+const isMob=()=>MQ.matches;
+function bump(svg,k){svg.querySelectorAll('text').forEach(t=>{const f=parseFloat(t.getAttribute('font-size')||'12');t.setAttribute('font-size',(f*k).toFixed(1));});}
+const onMQ=()=>Object.values(renderers).forEach(f=>f());
+if(MQ.addEventListener)MQ.addEventListener('change',onMQ);else MQ.addListener(onMQ);
 $$('.tab').forEach(b=>b.addEventListener('click',()=>{
   $$('.tab').forEach(x=>x.setAttribute('aria-selected',String(x===b)));
   $$('.panel').forEach(p=>p.classList.toggle('on',p.id===b.dataset.p));
@@ -425,10 +433,10 @@ const M3000=(function(){const target=3000/(2*R);let a=0.0005,b=1.5;for(let k=0;k
 (function(){
   const svg=$('#p2svg');
   const BANDS=[['160m',1.9],['80m',3.6],['40m',7.1],['30m',10.12],['20m',14.2],['17m',18.1],['15m',21.2],['12m',24.9],['10m',28.5]];
-  const st={mode:'single',day:true,foF2:9,f:14.2,beta:15};
-  const DMAX=6600, XL=40, XR=880;
+  const st={mode:'single',day:true,foF2:9,f:14.2,beta:15,sel:4};
+  let DMAX=6600, XL=40, XR=880, W=900, H=450;
   const xOfD=d=>XL+(d+120)/(DMAX+120)*(XR-XL);
-  const groundY=x=>{const u=(x-460)/440;return 410-42*(1-u*u);};
+  const groundY=x=>{const u=(x-W/2)/(W/2-10);return 410-42*(W/900)*(1-u*u);};
   const AY=0.62;
   const P=(theta,alt)=>{const x=xOfD(R*theta);return [x,groundY(x)-alt*AY];};
   const params=()=>({foE:st.day?3.4:0,foF2:st.foF2,hF:st.day?300:320,alf:st.day?4.0:0});
@@ -455,24 +463,31 @@ const M3000=(function(){const target=3000/(2*R);let a=0.0005,b=1.5;for(let k=0;k
   }
   function rayPath(f,beta,pr,theta0){
     const tr=trace(f,beta,pr);
+    const str=pts=>pts.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join('L');
     if(tr.layer==='P'){
-      const pts=upPts(theta0,beta,560,24).map(p=>P(p[0],p[1]));
-      return {tr:tr,d:'M'+pts.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join('L'),end:theta0};
+      /* MUF에 가까울수록 많이 휘어진 뒤 관통 */
+      const k=clamp((1.6-f*Math.cos(tr.i)/pr.foF2)/0.6,0,1);
+      const up=upPts(theta0,beta,205,12).map(p=>P(p[0],p[1]));
+      const mid=upPts(theta0,beta,380,1)[1], far=upPts(theta0,beta,560,1)[1];
+      const C=P(mid[0]+k*0.012,mid[1]-k*20), Z=P(far[0]+k*0.06,560-k*90);
+      return {tr:tr,d:'M'+str(up)+'Q'+C[0].toFixed(1)+' '+C[1].toFixed(1)+' '+Z[0].toFixed(1)+' '+Z[1].toFixed(1),end:theta0,tip:Z,dist:null};
     }
-    const up=upPts(theta0,beta,tr.hb,14);
-    const thE=up[up.length-1][0];
+    /* 주파수가 높을수록 층 더 높은 곳에서 굴절 → 실효 반사 높이가 올라가 도약 거리 증가 */
     const q=clamp(Math.pow(f*Math.cos(tr.i)/tr.fo,2),0,1);
     const hr=tr.hb+8+(tr.top-tr.hb-8)*q;
-    const apex=P(theta0+tr.phi,hr);
-    const thX=theta0+2*tr.phi-(thE-theta0);
+    const phi=geom(beta,hr).phi;
+    const up=upPts(theta0,beta,tr.hb,14);
+    const thE=up[up.length-1][0];
+    const apex=P(theta0+phi,hr);
+    const thX=theta0+2*phi-(thE-theta0);
     const E=P(thE,tr.hb),X=P(thX,tr.hb);
     const C=[2*apex[0]-0.5*(E[0]+X[0]),2*apex[1]-0.5*(E[1]+X[1])];
     const upS=up.map(p=>P(p[0],p[1]));
-    const dnS=up.slice().reverse().map(p=>P(theta0+2*tr.phi-(p[0]-theta0),p[1]));
-    let d='M'+upS.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join('L');
+    const dnS=up.slice().reverse().map(p=>P(theta0+2*phi-(p[0]-theta0),p[1]));
+    let d='M'+str(upS);
     d+='Q'+C[0].toFixed(1)+' '+C[1].toFixed(1)+' '+X[0].toFixed(1)+' '+X[1].toFixed(1);
-    d+='L'+dnS.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join('L');
-    return {tr:tr,d:d,end:theta0+2*tr.phi,apex:apex};
+    d+='L'+str(dnS);
+    return {tr:tr,d:d,end:theta0+2*phi,apex:apex,dist:2*R*phi};
   }
   function band(lo,hi){
     let top='',bot='';
@@ -483,26 +498,28 @@ const M3000=(function(){const target=3000/(2*R);let a=0.0005,b=1.5;for(let k=0;k
   function marker(defs,id,col){const m=S('marker',{id:id,viewBox:'0 0 10 10',refX:8,refY:5,markerWidth:7,markerHeight:7,orient:'auto-start-reverse'},defs);S('path',{d:'M0 0L10 5L0 10z',fill:col},m);}
 
   function draw(){
+    const mob=isMob();W=mob?600:900;DMAX=mob?3000:6600;XL=mob?24:40;XR=W-20;H=mob?480:450;svg.setAttribute('viewBox','0 0 '+W+' '+H);
     svg.replaceChildren();
     const pr=params();
     const defs=S('defs',null,svg);
     const sky=S('linearGradient',{id:'p2sky',x1:0,y1:0,x2:0,y2:1},defs);
     S('stop',{offset:0,'stop-color':st.day?'var(--sky2)':'var(--soft)'},sky);S('stop',{offset:1,'stop-color':'var(--sky1)'},sky);
     marker(defs,'mP','var(--pen)');marker(defs,'mF','var(--ret)');marker(defs,'mE','var(--retE)');marker(defs,'mA','var(--abs)');
-    S('rect',{x:0,y:0,width:900,height:450,fill:'url(#p2sky)'},svg);
+    S('rect',{x:0,y:0,width:W,height:H,fill:'url(#p2sky)'},svg);
     /* layers */
-    if(st.day){S('path',{d:band(50,90),fill:'var(--d)','fill-opacity':0.16},svg);}
-    S('path',{d:band(90,140),fill:'var(--e)','fill-opacity':st.day?0.16:0.05},svg);
-    S('path',{d:band(200,420),fill:'var(--f2)','fill-opacity':0.06+0.012*st.foF2},svg);
+    if(st.day){S('path',{d:band(50,90),fill:'var(--d)','fill-opacity':0.22},svg);}
+    S('path',{d:band(90,140),fill:'var(--e)','fill-opacity':st.day?0.22:0.07},svg);
+    S('path',{d:band(200,420),fill:'var(--f2)','fill-opacity':0.08+0.014*st.foF2},svg);
     const lab=(alt,txt,col)=>{const p=P((DMAX-120)/R,alt);T(svg,p[0],p[1]+4,txt,{'text-anchor':'end','font-size':12,'font-weight':700,fill:col});};
-    if(st.day)lab(70,'D층 · 흡수 (absorption)','var(--d)');
-    lab(115,st.day?'E층 (E layer)':'E층 · 야간 약화','var(--e)');
-    lab(310,'F층 (F2 layer)','var(--f2)');
+    const mobL=isMob();
+    if(st.day)lab(mobL?62:70,mobL?'D층':'D층 · 흡수 (absorption)','var(--d)');
+    lab(115,mobL?'E층':(st.day?'E층 (E layer)':'E층 · 야간 약화'),'var(--e)');
+    lab(310,mobL?'F층':'F층 (F2 layer)','var(--f2)');
     /* ground */
-    let gd='';for(let x=0;x<=900;x+=10){gd+=(gd?'L':'M')+x+' '+groundY(x).toFixed(1);}
-    S('path',{d:gd+'L900 450L0 450Z',fill:'var(--groundfill)'},svg);
+    let gd='';for(let x=0;x<=W;x+=10){gd+=(gd?'L':'M')+x+' '+groundY(x).toFixed(1);}
+    S('path',{d:gd+'L'+W+' '+H+'L0 '+H+'Z',fill:'var(--groundfill)'},svg);
     S('path',{d:gd,fill:'none',stroke:'var(--ground)','stroke-width':2},svg);
-    for(let k=1000;k<=6000;k+=1000){const x=xOfD(k),y=groundY(x);S('line',{x1:x,y1:y,x2:x,y2:y+6,stroke:'var(--ground)'},svg);T(svg,x,y+20,k.toLocaleString()+' km',{'text-anchor':'middle','font-size':11,fill:'var(--muted)',class:'mono'});}
+    const tstep=isMob()?500:1000;for(let k=tstep;k<=DMAX-300;k+=tstep){const x=xOfD(k),y=groundY(x);S('line',{x1:x,y1:y,x2:x,y2:y+6,stroke:'var(--ground)'},svg);T(svg,x,y+20,k.toLocaleString()+' km',{'text-anchor':'middle','font-size':11,fill:'var(--muted)',class:'mono'});}
     /* tx */
     const tx=P(0,0);S('line',{x1:tx[0],y1:tx[1],x2:tx[0],y2:tx[1]-16,stroke:'var(--ink)','stroke-width':2},svg);
     S('path',{d:`M${tx[0]-6} ${tx[1]-16}L${tx[0]+6} ${tx[1]-16}`,stroke:'var(--ink)','stroke-width':2},svg);
@@ -525,12 +542,12 @@ const M3000=(function(){const target=3000/(2*R);let a=0.0005,b=1.5;for(let k=0;k
         S('path',{d:rp.d,fill:'none',stroke:col,'stroke-width':hop?2:3,'stroke-opacity':hop?0.55-hop*0.08:1,'stroke-dasharray':absorbed?'6 5':'none','marker-end':(rp.tr.layer==='P'||hop===0)?'url(#'+mk+')':'none'},svg);
         if(rp.tr.layer==='P')break;
         const hit=P(rp.end,0);S('circle',{cx:hit[0],cy:hit[1],r:hop?3:4.5,fill:col,'fill-opacity':hop?0.6:1},svg);
-        if(hop===0){T(svg,hit[0]+10,hit[1]-16,Math.round(2*R*rp.tr.phi).toLocaleString()+' km',{'text-anchor':'start','font-size':12,'font-weight':700,fill:col,class:'mono'});}
+        if(hop===0){T(svg,hit[0]+10,hit[1]-(isMob()?30:16),Math.round(rp.dist).toLocaleString()+' km',{'text-anchor':'start','font-size':12,'font-weight':700,fill:col,class:'mono'});}
         th0=rp.end;if(R*th0>DMAX-200)break;
       }
       const tr=first.tr;const absorbed=pr.alf>0&&st.f<pr.alf;
       add('반사 위치 (reflecting layer)',tr.layer==='E'?'E층':tr.layer==='F'?'F층':'관통 (우주로)');
-      add('1홉 거리 (hop distance)',tr.layer==='P'?'—':Math.round(2*R*tr.phi).toLocaleString()+' km');
+      add('1홉 거리 (hop distance)',tr.layer==='P'?'—':Math.round(first.dist).toLocaleString()+' km');
       add('이 앙각의 F층 MUF',fmt(mufAt(b,pr))+' MHz');
       if(pr.foE>0)add('이 앙각의 E층 MUF',fmt(pr.foE/Math.cos(geom(b,110).i))+' MHz');
       add('스킵 거리 (skip distance)',sk.d===null?'모든 앙각에서 관통':sk.d===0?'없음 (f ≤ foF2)':Math.round(sk.d).toLocaleString()+' km');
@@ -556,7 +573,7 @@ const M3000=(function(){const target=3000/(2*R);let a=0.0005,b=1.5;for(let k=0;k
       if(sk.d&&sk.d>gw){
         S('path',{d:gpath(gw,Math.min(sk.d,DMAX)),fill:'none',stroke:'var(--pen)','stroke-width':6,'stroke-opacity':0.45},svg);
         const m=P(Math.min((gw+sk.d)/2,DMAX-300)/R,0);
-        T(svg,Math.max(m[0],tx[0]+150),m[1]+40,'스킵 존 (skip zone) · 약 '+Math.round(sk.d).toLocaleString()+' km까지',{'text-anchor':'middle','font-size':12,'font-weight':700,fill:'var(--pen)'});
+        T(svg,Math.max(m[0],tx[0]+(isMob()?120:150)),m[1]+(isMob()?52:40),'스킵 존 (skip zone) · 약 '+Math.round(sk.d).toLocaleString()+' km까지',{'text-anchor':'middle','font-size':12,'font-weight':700,fill:'var(--pen)'});
       }
       add('운용 주파수',fmt(st.f,2)+' MHz');
       add('스킵 거리 (skip distance)',sk.d===null?'모든 앙각에서 관통':sk.d===0?'없음 (f ≤ foF2)':Math.round(sk.d).toLocaleString()+' km');
@@ -569,24 +586,56 @@ const M3000=(function(){const target=3000/(2*R);let a=0.0005,b=1.5;for(let k=0;k
         '주파수를 foF2 아래로 내리면 모든 앙각이 돌아와 스킵 존이 사라집니다.'
       ]);
     } else {
-      const pal=['#2a9d68','#3aa776','#5bb35a','#8dbb3c','#c0b62a','#e09a22','#e07a2f','#d9533a','#c43a52'];
-      BANDS.forEach((bd,k)=>{
-        const rp=rayPath(bd[1],b,pr,0);const absorbed=pr.alf>0&&bd[1]<pr.alf;
-        const col=pal[k];
-        S('path',{d:rp.d,fill:'none',stroke:col,'stroke-width':2,'stroke-dasharray':absorbed?'5 4':(rp.tr.layer==='P'?'2 3':'none')},svg);
-        if(rp.tr.layer!=='P'){const h=P(rp.end,0);S('circle',{cx:h[0],cy:h[1],r:3,fill:col},svg);}
-        const res=absorbed?'흡수':rp.tr.layer==='P'?'관통':rp.tr.layer+'층 '+Math.round(2*R*rp.tr.phi).toLocaleString()+' km';
-        legItem(col,bd[0]+' '+res);
+      const pal=['#8a5cf0','#4f86e8','#1fa2c7','#18a058','#7cb342','#d9b20f','#e98a22','#e0563a','#d6336c'];
+      const res=BANDS.map((bd,k)=>{const rp=rayPath(bd[1],b,pr,0);const absorbed=pr.alf>0&&bd[1]<pr.alf;
+        const txt=absorbed?'D층 흡수':rp.tr.layer==='P'?'관통':rp.tr.layer+'층 '+Math.round(rp.dist).toLocaleString()+' km';
+        return {bd:bd,k:k,rp:rp,absorbed:absorbed,txt:txt,col:pal[k]};});
+      /* 선택 밴드를 마지막에 그려 맨 위로 */
+      res.slice().sort((x,y)=>(x.k===st.sel)-(y.k===st.sel)).forEach(r=>{
+        const on=r.k===st.sel;
+        S('path',{d:r.rp.d,fill:'none',stroke:r.col,'stroke-width':on?3.6:1.7,'stroke-opacity':on?1:0.5,'stroke-linecap':'round',
+          'stroke-dasharray':r.absorbed?'7 5':(r.rp.tr.layer==='P'?'4 4':'none')},svg);
       });
+      /* 착지점·관통 끝 라벨 (겹치지 않게 층 나누기) */
+      const marks=res.map(r=>{
+        if(r.rp.tr.layer==='P')return {r:r,x:r.rp.tip[0],y:r.rp.tip[1],top:true};
+        const h=P(r.rp.end,0);return {r:r,x:h[0],y:h[1],top:false};
+      });
+      /* 관통 끝점이 가까운 밴드는 라벨 하나로 묶기 */
+      const tops=marks.filter(m=>m.top).sort((a,b)=>a.y-b.y), groups=[];
+      tops.forEach(m=>{const g=groups.find(g=>Math.hypot(g[0].x-m.x,g[0].y-m.y)<26);if(g)g.push(m);else groups.push([m]);});
+      groups.forEach(g=>{const on=g.some(m=>m.r.k===st.sel);const lead=g.find(m=>m.r.k===st.sel)||g[0];
+        T(svg,g[0].x+6,g[0].y-2,g.slice().sort((x,y)=>x.r.k-y.r.k).map(m=>m.r.bd[0]).join(' · '),{'font-size':on?12:10.5,'font-weight':on?700:500,fill:lead.r.col,class:'mono'});});
+      const placed=[];
+      marks.filter(m=>!m.top).sort((a,b)=>a.x-b.x).forEach(m=>{
+        let lv=0;while(placed.some(o=>o.top===m.top&&o.lv===lv&&Math.abs(o.x-m.x)<(isMob()?46:34)))lv++;
+        placed.push({x:m.x,top:m.top,lv:lv});
+        const on=m.r.k===st.sel, col=m.r.col;
+        if(m.top){
+          T(svg,m.x+4,m.y-4-lv*13,m.r.bd[0],{'font-size':on?12:10.5,'font-weight':on?700:500,fill:col,class:'mono',opacity:on?1:0.8});
+        }else{
+          S('circle',{cx:m.x,cy:m.y,r:on?5:3.2,fill:col,stroke:'var(--panel)','stroke-width':1.2},svg);
+          const ly=m.y-12-lv*14;
+          if(lv)S('line',{x1:m.x,y1:m.y-5,x2:m.x,y2:ly+3,stroke:col,'stroke-width':1,opacity:0.6},svg);
+          T(svg,m.x,ly,m.r.bd[0],{'text-anchor':'middle','font-size':on?12:10.5,'font-weight':on?700:500,fill:col,class:'mono',opacity:on?1:0.8});
+        }
+      });
+      leg.replaceChildren();
+      res.forEach(r=>{const btn=document.createElement('button');btn.type='button';btn.className='legbtn'+(r.k===st.sel?' on':'');
+        btn.innerHTML='<i style="background:'+r.col+'"></i>';btn.append(r.bd[0]+' · '+r.txt);
+        btn.addEventListener('click',()=>{st.sel=r.k;draw();});leg.append(btn);});
+      const sr=res[st.sel];
       add('방사 앙각 (elevation angle)',st.beta+'°');
       add('이 앙각의 F층 MUF',fmt(mufAt(b,pr))+' MHz');
       if(pr.foE>0)add('이 앙각의 E층 MUF',fmt(pr.foE/Math.cos(geom(b,110).i))+' MHz');
+      add('선택 밴드 '+sr.bd[0],sr.txt);
       tip('앙각 고정 · 주파수 변화',[
-        '같은 앙각에서 160 m부터 10 m까지 아홉 밴드를 비교합니다. 실선은 귀환, 점선(짧은 간격)은 관통, 긴 점선은 D층 흡수입니다.',
-        '주파수가 높을수록 전리층 더 높은 곳에서 굴절해 더 멀리 떨어지다가, 이 앙각의 MUF를 넘는 밴드부터 관통합니다.',
-        '앙각을 낮추면 MUF가 올라가 더 높은 밴드까지 돌아옵니다. 낮은 앙각이 DX에 유리한 이유입니다.'
+        '같은 앙각에서 160 m부터 10 m까지 아홉 밴드를 비교합니다. 아래 밴드 버튼을 누르면 그 밴드의 경로가 굵게 강조됩니다.',
+        '실선은 귀환, 짧은 점선은 관통, 긴 점선은 D층 흡수입니다. 귀환하는 밴드는 주파수가 높을수록 더 높은 곳에서 굴절해 더 멀리 떨어집니다.',
+        'MUF를 넘는 밴드는 관통하는데, MUF에 가까운 밴드일수록 많이 휘어진 뒤 빠져나갑니다. 앙각을 낮추면 MUF가 올라가 더 높은 밴드까지 돌아옵니다.'
       ]);
     }
+    if(isMob())bump(svg,1.45);
     $('#p2foo').textContent=fmt(st.foF2)+' MHz';
     $('#p2fout').textContent=fmt(st.f,2)+' MHz';
     $('#p2bout').textContent=st.beta+'°';
@@ -618,7 +667,7 @@ const M3000=(function(){const target=3000/(2*R);let a=0.0005,b=1.5;for(let k=0;k
   };
   const st={ssn:100,season:'equinox',t:12};
   let timer=null;
-  const X0=64,X1=800,Y0=26,Y1=372,FMAX=40;
+  let X0=64,X1=800;const Y0=26,Y1=372,FMAX=40;
   const xOf=h=>X0+h/24*(X1-X0), yOf=f=>Y1-f/FMAX*(Y1-Y0);
 
   function model(){
@@ -641,6 +690,7 @@ const M3000=(function(){const target=3000/(2*R);let a=0.0005,b=1.5;for(let k=0;k
   const NAME={open:'양호 (open)',marg:'MUF 근접 (marginal)',abs:'D층 흡수 (absorbed)',closed:'관통 (closed)'};
 
   function draw(){
+    const mob=isMob();X0=mob?58:64;X1=mob?548:800;svg.setAttribute('viewBox',mob?'0 0 610 430':'0 0 900 430');
     svg.replaceChildren();
     const m=model();
     S('rect',{x:X0,y:Y0,width:X1-X0,height:Y1-Y0,fill:'var(--panel)',stroke:'var(--line)'},svg);
@@ -648,7 +698,7 @@ const M3000=(function(){const target=3000/(2*R);let a=0.0005,b=1.5;for(let k=0;k
     S('rect',{x:xOf(m.S_.ss),y:Y0,width:X1-xOf(m.S_.ss),height:Y1-Y0,fill:'var(--night)'},svg);
     T(svg,xOf(m.S_.sr),Y0-8,'일출 (sunrise) '+hm(m.S_.sr),{'text-anchor':'middle','font-size':11,fill:'var(--muted)'});
     T(svg,xOf(m.S_.ss),Y0-8,'일몰 (sunset) '+hm(m.S_.ss),{'text-anchor':'middle','font-size':11,fill:'var(--muted)'});
-    for(let h=0;h<=24;h+=3){const x=xOf(h);S('line',{x1:x,y1:Y1,x2:x,y2:Y1+5,stroke:'var(--muted)'},svg);T(svg,x,Y1+20,String(h).padStart(2,'0')+':00',{'text-anchor':'middle','font-size':11,fill:'var(--muted)',class:'mono'});}
+    for(let h=0;h<=24;h+=(isMob()?6:3)){const x=xOf(h);S('line',{x1:x,y1:Y1,x2:x,y2:Y1+5,stroke:'var(--muted)'},svg);T(svg,x,Y1+20,String(h).padStart(2,'0')+':00',{'text-anchor':'middle','font-size':11,fill:'var(--muted)',class:'mono'});}
     for(let f=0;f<=FMAX;f+=10){const y=yOf(f);S('line',{x1:X0,y1:y,x2:X1,y2:y,stroke:'var(--line)','stroke-dasharray':f?'2 4':'none'},svg);T(svg,X0-8,y+4,String(f),{'text-anchor':'end','font-size':11,fill:'var(--muted)',class:'mono'});}
     T(svg,18,(Y0+Y1)/2,'주파수 (MHz)',{'text-anchor':'middle','font-size':12,fill:'var(--muted)',transform:'rotate(-90 18 '+((Y0+Y1)/2)+')'});
     T(svg,(X0+X1)/2,Y1+40,'지방시 (local time)',{'text-anchor':'middle','font-size':12,fill:'var(--muted)'});
@@ -668,6 +718,7 @@ const M3000=(function(){const target=3000/(2*R);let a=0.0005,b=1.5;for(let k=0;k
     const x=xOf(st.t);S('line',{x1:x,y1:Y0,x2:x,y2:Y1,stroke:'var(--ink)','stroke-width':1.2,'stroke-dasharray':'3 3'},svg);
     const mv=m.muf(st.t);S('circle',{cx:x,cy:yOf(Math.min(mv,FMAX)),r:4.5,fill:'var(--pen)'},svg);
     T(svg,x+(st.t>20?-8:8),yOf(Math.min(mv,FMAX))-8,'MUF '+fmt(mv),{'font-size':12,'font-weight':700,fill:'var(--pen)',class:'mono','text-anchor':st.t>20?'end':'start'});
+    if(isMob())bump(svg,1.5);
     /* readouts */
     const kv=$('#p3kv');kv.replaceChildren();
     const add=(k,v)=>{const dt=document.createElement('dt');dt.textContent=k;const dd=document.createElement('dd');dd.textContent=v;kv.append(dt,dd);};
@@ -701,7 +752,7 @@ const M3000=(function(){const target=3000/(2*R);let a=0.0005,b=1.5;for(let k=0;k
 (function(){
   const svg=$('#p4svg');
   const FREQ=[[3.5,'80m','#c43a52'],[7.1,'40m','#e07a2f'],[14.2,'20m','#c0b62a'],[21.2,'15m','#3aa776'],[28.5,'10m','#4f86e8']];
-  const X0=70,X1=860,Y0=22,Y1=300,YMIN=-50;
+  let X0=70,X1=860;const Y0=22,Y1=300,YMIN=-50;
   const gauss=(x,m,w)=>Math.exp(-0.5*Math.pow((x-m)/w,2));
   const EV={
     swf:{name:'단파 페이드아웃 (Short Wave Fade-out, SWF)',t0:-20,t1:150,unit:'분',tick:30,mark:[0,'플레어 시작'],
@@ -731,20 +782,22 @@ const M3000=(function(){const target=3000/(2*R);let a=0.0005,b=1.5;for(let k=0;k
     return -48*closed+lowAbs;
   }
   function draw(){
+    const mob=isMob();X0=mob?78:70;X1=mob?575:860;svg.setAttribute('viewBox',mob?'0 0 610 370':'0 0 900 370');
     svg.replaceChildren();
     const ev=EV[cur];
     const xOf=t=>X0+(t-ev.t0)/(ev.t1-ev.t0)*(X1-X0), yOf=v=>Y0+(-v)/(-YMIN)*(Y1-Y0);
     S('rect',{x:X0,y:Y0,width:X1-X0,height:Y1-Y0,fill:'var(--panel)',stroke:'var(--line)'},svg);
     for(let v=0;v>=YMIN;v-=10){const y=yOf(v);S('line',{x1:X0,y1:y,x2:X1,y2:y,stroke:'var(--line)','stroke-dasharray':v?'2 4':'none'},svg);T(svg,X0-8,y+4,String(v),{'text-anchor':'end','font-size':11,fill:'var(--muted)',class:'mono'});}
     const t0=Math.ceil(ev.t0/ev.tick)*ev.tick;
-    for(let t=t0;t<=ev.t1+1e-9;t+=ev.tick){const x=xOf(t);S('line',{x1:x,y1:Y1,x2:x,y2:Y1+5,stroke:'var(--muted)'},svg);T(svg,x,Y1+20,(cur==='es'?String(t).padStart(2,'0')+':00':String(t)),{'text-anchor':'middle','font-size':11,fill:'var(--muted)',class:'mono'});}
+    const tk=ev.tick*(isMob()&&cur==='es'?2:1);for(let t=t0;t<=ev.t1+1e-9;t+=tk){const x=xOf(t);S('line',{x1:x,y1:Y1,x2:x,y2:Y1+5,stroke:'var(--muted)'},svg);T(svg,x,Y1+20,(cur==='es'?String(t).padStart(2,'0')+':00':String(t)),{'text-anchor':'middle','font-size':11,fill:'var(--muted)',class:'mono'});}
     T(svg,(X0+X1)/2,Y1+42,cur==='es'?'지방시':'시간 ('+ev.unit+')',{'text-anchor':'middle','font-size':12,fill:'var(--muted)'});
-    T(svg,20,(Y0+Y1)/2,'상대 신호 세기 (relative signal, dB)',{'text-anchor':'middle','font-size':12,fill:'var(--muted)',transform:'rotate(-90 20 '+((Y0+Y1)/2)+')'});
+    {const yx=isMob()?14:20;T(svg,yx,(Y0+Y1)/2,isMob()?'상대 신호 세기 (dB)':'상대 신호 세기 (relative signal, dB)',{'text-anchor':'middle','font-size':12,fill:'var(--muted)',transform:'rotate(-90 '+yx+' '+((Y0+Y1)/2)+')'});}
     if(ev.mark){const x=xOf(ev.mark[0]);S('line',{x1:x,y1:Y0,x2:x,y2:Y1,stroke:'var(--ink)','stroke-dasharray':'4 3'},svg);T(svg,x+6,Y1-8,ev.mark[1],{'font-size':11,fill:'var(--ink)'});}
     FREQ.forEach(fr=>{
       let d='';for(let k=0;k<=320;k++){const t=ev.t0+(ev.t1-ev.t0)*k/320;const v=clamp(sigOf(ev,fr[0],t),YMIN,0);d+=(d?'L':'M')+xOf(t).toFixed(1)+' '+yOf(v).toFixed(1);}
       S('path',{d:d,fill:'none',stroke:fr[2],'stroke-width':2.4,'stroke-linejoin':'round'},svg);
     });
+    if(isMob())bump(svg,1.5);
     const leg=$('#p4leg');leg.replaceChildren();
     FREQ.forEach(fr=>{const s=document.createElement('span');s.innerHTML='<i style="background:'+fr[2]+'"></i>';s.append(fr[1]+' ('+fr[0]+' MHz)');leg.append(s);});
     $('#p4cap').textContent=ev.cap+' 0 dB는 평상시 수준.';
