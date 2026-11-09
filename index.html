@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>전리층과 HF 전파 전파</title>
+<title>전파 예보 읽기</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -141,187 +141,273 @@ table.cmp thead th{color:var(--ink);font-weight:700}
 footer{border-top:1px solid var(--line);margin-top:30px;padding:16px 0 40px;color:var(--muted);font-size:.84em}
 svg text{font-family:'Noto Sans KR',system-ui,sans-serif}
 svg .mono{font-family:var(--mono)}
+
+/* ---- forecast page ---- */
+.sec{padding:24px 0 8px}
+.sec+.sec{border-top:1px solid var(--line);margin-top:14px}
+.sechead{display:flex;justify-content:space-between;align-items:center;gap:10px 16px;flex-wrap:wrap;margin-bottom:6px}
+.sechead h2{font-size:1.3em;margin:0;letter-spacing:-.01em}
+.sechead h2 small,.sub small,.idx h3 small{font-weight:500;color:var(--muted);font-size:.62em;margin-left:8px}
+.status{display:flex;gap:10px;align-items:center;font-size:.86em;color:var(--muted);flex-wrap:wrap}
+.status .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle;background:var(--muted)}
+.status .dot.ok{background:var(--ret)}.status .dot.err{background:var(--pen)}
+.badge-src{font-size:.8em;color:var(--muted);border:1px solid var(--line);border-radius:12px;padding:2px 10px}
+.badge-src.man{color:var(--accent);border-color:var(--accent)}
+.lead{max-width:820px;margin:6px 0 14px}
+.scales{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0}
+.scl{padding:12px 14px;display:grid;grid-template-columns:auto 1fr;gap:2px 12px;align-items:center}
+.scl .big{grid-row:1/4;font-family:var(--mono);font-weight:700;font-size:2em;line-height:1;width:58px;height:58px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff}
+.scl .nm{font-weight:700;font-size:.95em}
+.scl .nm small{display:block;font-weight:400;color:var(--muted);font-size:.8em}
+.scl .fc{font-size:.82em;color:var(--muted)}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.mt{padding:14px 16px 10px;display:flex;flex-direction:column;gap:4px}
+.mt .nm{font-size:.9em;font-weight:700}
+.mt .nm small{font-weight:400;color:var(--muted);margin-left:6px;font-size:.85em}
+.mt .row{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.mt .val{font-family:var(--mono);font-weight:700;font-size:1.9em;line-height:1.1}
+.mt .unit{font-size:.8em;color:var(--muted)}
+.mt .desc{font-size:.85em;color:var(--muted);min-height:2.6em}
+.mt .when{font-size:.75em;color:var(--muted);font-family:var(--mono)}
+.mt svg{width:100%;height:auto;display:block;margin-top:4px}
+.lv{display:inline-block;font-size:.78em;font-weight:700;padding:1px 9px;border-radius:10px;white-space:nowrap}
+.lv.g{background:color-mix(in srgb,var(--ret) 18%,transparent);color:var(--ret)}
+.lv.f{background:color-mix(in srgb,var(--marg) 24%,transparent);color:color-mix(in srgb,var(--marg) 65%,var(--ink))}
+.lv.p{background:color-mix(in srgb,var(--pen) 16%,transparent);color:var(--pen)}
+.lv.n{background:var(--soft);color:var(--muted)}
+table.outlook{width:100%;border-collapse:separate;border-spacing:0 6px;font-size:.92em}
+table.outlook th{font-weight:500;color:var(--muted);text-align:center;font-size:.9em}
+table.outlook th:first-child{text-align:left}
+table.outlook td{text-align:center}
+table.outlook td:first-child{text-align:left;font-family:var(--mono);font-weight:700}
+.cell{display:block;border-radius:9px;padding:7px 4px;font-weight:700;font-size:.92em}
+.cell.g{background:color-mix(in srgb,var(--ret) 20%,var(--panel));color:var(--ret)}
+.cell.f{background:color-mix(in srgb,var(--marg) 26%,var(--panel));color:color-mix(in srgb,var(--marg) 60%,var(--ink))}
+.cell.p{background:color-mix(in srgb,var(--pen) 15%,var(--panel));color:var(--pen)}
+ul.why{margin:0;padding-left:18px;font-size:.9em}
+ul.why li{margin:4px 0}
+details.manual{margin-top:14px}
+details.manual summary{list-style:none;cursor:pointer;padding:12px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+details.manual summary::-webkit-details-marker{display:none}
+.sumtxt{font-size:.86em;color:var(--muted)}
+.idx{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.idx h3{font-size:1.02em;margin:0 0 6px}
+.idx p{font-size:.92em;margin:6px 0}
+table.rng{width:100%;border-collapse:collapse;font-size:.86em;margin-top:8px}
+table.rng th,table.rng td{border-bottom:1px solid var(--line);padding:6px 6px;text-align:left;vertical-align:top}
+table.rng th{color:var(--muted);font-weight:500}
+table.rng td:first-child{font-family:var(--mono);white-space:nowrap}
+.tipx{font-size:.86em!important;background:var(--soft);border-radius:8px;padding:8px 10px}
+h3.sub{font-size:1.08em;margin:26px 0 8px}
+details.cycd summary{list-style:none;cursor:pointer;padding:14px 16px}
+details.cycd summary::-webkit-details-marker{display:none}
+.cycsum{display:grid;grid-template-columns:minmax(0,1fr) 240px auto;gap:12px 18px;align-items:center}
+.cych{font-size:1.3em;margin:0;letter-spacing:-.01em}
+.cych small{font-weight:500;color:var(--muted);font-size:.62em;margin-left:8px}
+.cycline{margin:4px 0 0;font-size:.92em;color:var(--muted)}
+#cycMini{width:100%;height:auto;display:block}
+.cyctog .c{display:none}
+details[open] .cyctog .o{display:none}
+details[open] .cyctog .c{display:inline}
+.cycbody{padding:0 16px 16px;border-top:1px solid var(--line)}
+@media (max-width:640px){.cycsum{grid-template-columns:1fr}.cyctog{justify-self:start}#cycMini{max-width:260px}}
+@media (max-width:760px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.idx{grid-template-columns:1fr}}
+@media (max-width:640px){.scales{grid-template-columns:1fr}.metrics{grid-template-columns:1fr}.scl .big{width:50px;height:50px;font-size:1.7em}}
 </style>
 </head>
 <body>
-
 <div class="site"><div class="wrap">
   <div class="brand">HF 전파 전파 해설<small>HF Propagation</small></div>
   <nav>
-    <a class="on" href="index.html">전리층 원리</a>
-    <a href="forecast.html">전파 예보 읽기</a>
+    <a href="index.html">전리층 원리</a>
+    <a class="on" href="forecast.html">전파 예보 읽기</a>
   </nav>
 </div></div>
 
 <main class="wrap">
 <header class="hero">
-  <h1>전리층과 HF 전파 전파<span>The Ionosphere and HF Radio Propagation</span></h1>
-  <p>어제는 수천 km 떨어진 국과 교신이 잘 되던 밴드가, 안테나·무전기·급전선을 하나도 바꾸지 않았는데 오늘은 조용할 때가 있습니다. 그 원인의 대부분은 운용국이 아니라 지상 수십~수백 km의 전리층, 그리고 전리층을 만드는 태양에 있습니다. 아래 네 개의 탭에서 전리층의 구조, 굴절과 MUF, 하루·계절·태양 주기에 따른 변화, 태양 교란의 영향을 차례로 살펴봅니다.</p>
+  <h1>전파 예보 읽기<span>Reading HF Propagation Reports</span></h1>
+  <p>전파 예보는 지구의 날씨 대신 태양과 지구 주변 우주의 날씨를 알려 주는 일기 예보입니다. 아래 값은 미국 해양대기청 우주기상예보센터(NOAA SWPC, Space Weather Prediction Center)가 공개하는 자료를 페이지를 열 때마다 불러온 것입니다. 각 값이 무엇을 뜻하는지, 지금 어느 밴드가 유리한지를 함께 풀어 보여 줍니다.</p>
 </header>
 
-<p class="tabs-hint">아래 버튼을 눌러 주제를 바꿀 수 있습니다.</p>
-<div class="tabs" role="tablist" style="margin-top:8px">
-  <button class="tab" role="tab" aria-selected="true" data-p="p1"><b>①</b>전리층 구조</button>
-  <button class="tab" role="tab" aria-selected="false" data-p="p2"><b>②</b>굴절과 MUF</button>
-  <button class="tab" role="tab" aria-selected="false" data-p="p3"><b>③</b>하루·계절·태양 주기</button>
-  <button class="tab" role="tab" aria-selected="false" data-p="p4"><b>④</b>태양 교란</button>
-</div>
-
-<!-- ================= ① ================= -->
-<section class="panel on" id="p1">
-  <h2>전리층 구조<small>Structure of the Ionosphere</small></h2>
-  <p class="lead">태양의 극자외선(EUV, extreme ultraviolet)과 X선(X-ray)이 상층 대기의 원자·분자에서 전자를 떼어 내면 양이온(positive ion)과 자유 전자(free electron)가 생깁니다. 이 과정을 이온화(ionisation)라 하고, 이온화된 입자가 많은 고도 약 50~500 km 영역을 전리층(ionosphere)이라 합니다. 이름은 이온에서 왔지만 HF 전파에 영향을 주는 것은 훨씬 가볍고 잘 움직이는 자유 전자입니다. 전자 밀도(electron density)가 높을수록 더 높은 주파수의 전파를 지구로 되돌려 보냅니다.</p>
-
-  <div class="grid2">
-    <div class="card">
-      <div class="stage"><svg id="p1svg" viewBox="0 0 760 470" aria-label="고도별 전자 밀도 단면"></svg>
-        <div class="cap">고도별 전자 밀도 단면(electron density profile)과 각 영역의 범위. 춘·추분, 중위도, 태양 흑점 수 100 기준 모형.</div>
-      </div>
-      <div class="ctrl">
-        <div style="grid-column:1/-1"><label>시각 (지방시, local time) <output id="p1to">12:00</output></label><input type="range" id="p1t" min="0" max="24" step="0.1" value="12">
-          <div class="btnrow"><button type="button" class="act" id="p1play">▶ 하루 재생</button>
-            <div class="chips" id="p1pre"><button type="button" data-v="12">정오 12:00</button><button type="button" data-v="19.5">일몰 직후 19:30</button><button type="button" data-v="0">자정 00:00</button><button type="button" data-v="5.5">일출 전 05:30</button></div></div>
-        </div>
-      </div>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:14px">
-      <div class="card read">
-        <h3>임계 주파수 (critical frequency)</h3>
-        <dl class="kv" id="p1kv"></dl>
-        <p style="font-size:.9em;margin:10px 0 0">전파를 수직으로 쏘아 올렸을 때 그 층에서 되돌아오는 가장 높은 주파수입니다. 층의 자유 전자가 많을수록 높아지고, 이보다 높은 주파수는 수직으로 쏘면 층을 뚫고 나갑니다. 실제 값은 이오노존데(ionosonde)라는 수직 탐측 장비로 측정합니다.</p>
-        <p class="note" style="margin-top:8px;font-size:.8em">f₀ ≈ 9·√N<sub>max</sub> (Hz) — N<sub>max</sub>: 층의 최대 전자 밀도(electrons/m³)</p>
-      </div>
-      <div class="card read info" id="p1info"></div>
-    </div>
+<!-- ================= 지금 우주기상 ================= -->
+<section class="sec">
+  <div class="sechead">
+    <h2>지금 우주기상<small>Current Space Weather</small></h2>
+    <div class="status"><span id="stTxt">불러오는 중…</span><button type="button" class="act" id="reload">↻ 새로 고침</button></div>
   </div>
 
-  <ul class="points">
-    <li><b>D 영역</b>은 HF 전파를 굴절시키지 않고 흡수(absorption)합니다. 낮에만 존재하며, 낮은 주파수일수록 흡수가 큽니다.</li>
-    <li><b>E·F1·F2 영역</b>만 HF 전파를 굴절(refraction)시킵니다. F1은 F2와 합쳐지는 경우가 많아 전파 모드(propagation mode) 검토에서는 보통 F2만 F 영역으로 다룹니다.</li>
-    <li>밤에는 D·E·F1 영역의 자유 전자가 크게 줄고 <b>F2 영역만 남습니다.</b> 전자 수명(electron lifetime)은 E 약 20초, F1 약 1분, F2 약 20분입니다. 그래서 D·E·F1은 해를 따라 거의 즉시 생기고 사라지지만, F2는 해가 진 뒤에도 밤새 천천히 줄어듭니다. "하루 재생"으로 확인해 보세요.</li>
-  </ul>
+  <div class="scales" id="scales"></div>
+
+  <div class="metrics" id="metrics"></div>
+  <p class="note">자료: NOAA SWPC (services.swpc.noaa.gov). 시각은 보고 있는 기기의 현지 시각입니다. 값마다 갱신 주기가 달라, 태양 플럭스와 흑점 수는 하루 단위, Kp는 3시간 단위, X선과 태양풍 자기장은 1분 단위로 갱신됩니다.</p>
 </section>
 
-<!-- ================= ② ================= -->
-<section class="panel" id="p2">
-  <h2>굴절과 MUF<small>Refraction and the Maximum Usable Frequency</small></h2>
-  <p class="lead">전파가 전리층에 들어가면 자유 전자가 전파의 전기장(electric field)에 반응하면서 진행 방향이 조금씩 휘어집니다. 엄밀히는 반사가 아니라 굴절(refraction)이지만, 충분히 휘어져 지구로 돌아오면 흔히 "반사(reflection)"라고 부릅니다. 어떤 주파수가 돌아오는지는 층의 전자 밀도와 전파가 들어가는 각도에 따라 정해지며, 특정 경로에서 돌아올 수 있는 가장 높은 주파수가 최고 사용 가능 주파수(MUF, Maximum Usable Frequency)입니다.</p>
-
-  <div class="card">
-    <div class="stage">
-      <svg id="p2svg" viewBox="0 0 900 450" aria-label="전파 경로 도식"></svg>
-      <div class="legend" id="p2leg"></div>
-      <div class="cap">송신점(왼쪽)에서 발사된 전파의 경로. 고도는 지상 거리보다 약 5배 확대한 도식.</div>
-    </div>
-    <div class="ctrl">
-      <div style="grid-column:1/-1"><label>보기 방식</label>
-        <div class="seg" id="p2mode"><button class="on" data-v="single">단일 경로<small>Single path</small></button><button data-v="fan">주파수 고정 · 앙각 변화<small>Fixed frequency</small></button><button data-v="cmp">앙각 고정 · 주파수 변화<small>Fixed elevation</small></button></div>
-      </div>
-      <div><label>시간대</label>
-        <div class="seg" id="p2day"><button class="on" data-v="day">주간<small>Day</small></button><button data-v="night">야간<small>Night</small></button></div>
-      </div>
-      <div><label>F2 임계 주파수 foF2 <output id="p2foo">9.0 MHz</output></label><input type="range" id="p2fo" min="2" max="14" step="0.1" value="9"></div>
-      <div style="grid-column:1/-1"><label>빠른 예시 — NVIS 근거리 통신 (Near Vertical Incidence Skywave)</label><div class="btnrow" style="margin-top:4px"><button type="button" class="act" id="p2nvisD">▸ 주간 NVIS<small>40 m · 앙각 80° · foF2 9 MHz</small></button><button type="button" class="act" id="p2nvisN">▸ 야간 NVIS<small>80 m · 앙각 80° · foF2 5 MHz</small></button></div></div>
-      <div id="p2fwrap"><label>운용 주파수 <output id="p2fout">14.20 MHz</output></label><input type="range" id="p2f" min="1.8" max="30" step="0.05" value="14.2">
-        <div class="chips" id="p2chips"></div></div>
-      <div id="p2bwrap"><label>방사 앙각 (elevation angle) <output id="p2bout">15°</output></label><input type="range" id="p2b" min="1" max="89" step="1" value="15"></div>
-    </div>
-  </div>
-
+<!-- ================= 밴드 해석 ================= -->
+<section class="sec">
+  <div class="sechead"><h2>밴드별 경향<small>Band Outlook</small></h2><span class="badge-src" id="srcBadge">실시간 값 기준</span></div>
+  <p class="lead">위의 값으로 밴드별 주간·야간 경향을 추정합니다. 하이 밴드는 태양 플럭스(SFI)가, 모든 밴드는 지자기 교란(Kp·A)과 X선 플레어(R 등급)가 좌우합니다. 중위도 경로를 기준으로 한 경험칙이며, 실제 열림 여부는 경로·시각·계절에 따라 다릅니다.</p>
   <div class="grid2">
-    <div class="card read"><h3>현재 조건</h3><dl class="kv" id="p2kv"></dl></div>
-    <div class="card read"><h3 id="p2th">읽는 법</h3><div id="p2tip" style="font-size:.9em"></div></div>
+    <div class="card read">
+      <table class="outlook" id="outlook"></table>
+      <div class="legend" style="margin-top:10px"><span><i style="background:var(--ret)"></i>양호 (good)</span><span><i style="background:var(--marg)"></i>보통 (fair)</span><span><i style="background:var(--pen)"></i>불량 (poor)</span></div>
+    </div>
+    <div class="card read"><h3>판단 근거</h3><ul class="why" id="why"></ul></div>
   </div>
 
-  <ul class="points">
-    <li><b>임계 주파수와 MUF:</b> foF2는 수직으로 쏘았을 때의 한계입니다. 비스듬히 들어가는 전파는 더 높은 주파수까지 돌아와, MUF ≈ foF2 × sec <i>i</i>(<i>i</i>: 층에 입사하는 각도)가 됩니다. 3,000 km 경로에서는 foF2의 약 3배입니다.</li>
-    <li><b>앙각 고정:</b> 주파수를 MUF 쪽으로 올릴수록 전리층 더 높은 곳에서 굴절하고 도달 거리가 늘어납니다. MUF를 넘으면 전리층을 관통(penetrate)합니다.</li>
-    <li><b>주파수 고정:</b> 앙각을 높일수록 도달 거리가 짧아지다가, 임계 앙각(critical elevation angle)을 넘으면 관통합니다. 그 결과 송신점 주변에 공간파(sky wave)가 닿지 않는 <b>스킵 존(skip zone)</b>이 생깁니다.</li>
-    <li>운용 주파수가 foF2 이하이면 수직 입사도 반사되므로 스킵 존이 없습니다. 근거리 고앙각 운용(NVIS, Near Vertical Incidence Skywave)이 이 조건을 이용합니다.</li>
-    <li>1홉(single hop) 최대 거리는 층 높이와 지구 곡률(earth curvature)로 정해지며, 앙각 4° 기준 E층 약 1,800 km, F층 약 3,200 km입니다. 그보다 먼 경로는 여러 홉(multi-hop)이 필요합니다.</li>
-  </ul>
-  <p class="note">안테나 높이에 따라 방사 앙각이 어떻게 달라지는지는 <a href="https://kooking0-jh.github.io/wire-antenna-pattern/" target="_blank" rel="noopener">와이어 안테나 방사 패턴</a> 페이지에서 확인할 수 있습니다.</p>
+  <details class="card manual" id="manual">
+    <summary><span class="act" style="display:inline-block">✎ 직접 값 넣어 보기</span><span class="sumtxt">값을 바꿔 가며 밴드 경향이 어떻게 달라지는지 확인할 수 있습니다. 실시간 자료를 불러오지 못하면 자동으로 열립니다.</span></summary>
+    <div class="ctrl" style="border-top:1px solid var(--line)">
+      <div><label>태양 플럭스 SFI (7일 평균) <output id="mSo">120</output></label><input type="range" id="mS" min="60" max="300" step="1" value="120"></div>
+      <div><label>Kp 지수 <output id="mKo">2.0</output></label><input type="range" id="mK" min="0" max="9" step="0.33" value="2"></div>
+      <div><label>A 지수 (전날) <output id="mAo">8</output></label><input type="range" id="mA" min="0" max="200" step="1" value="8"></div>
+      <div><label>R 등급 (X선 전파 두절)</label>
+        <div class="seg" id="mR"><button class="on" data-v="0">R0</button><button data-v="1">R1</button><button data-v="2">R2</button><button data-v="3">R3+</button></div></div>
+      <div style="grid-column:1/-1" class="btnrow">
+        <button type="button" class="act" id="mUse">▸ 이 값으로 해석</button>
+        <button type="button" class="act" id="mLive">↺ 실시간 값으로 돌아가기</button>
+      </div>
+    </div>
+  </details>
 </section>
 
-<!-- ================= ③ ================= -->
-<section class="panel" id="p3">
-  <h2>하루·계절·태양 주기<small>Daily, Seasonal and Solar-Cycle Variations</small></h2>
-  <p class="lead">전리층은 같은 주파수를 하루 종일, 일 년 내내 쓸 수 있는 안정된 매질이 아닙니다. 해가 뜨면 전자 생성이 시작되어 MUF가 빠르게 오르고, 오후부터 내려가 새벽 직전에 가장 낮아집니다. 반대로 낮에는 D 영역 흡수 때문에 낮은 주파수에 하한선이 생기는데, 이를 흡수 한계 주파수(ALF, Absorption Limiting Frequency)라 합니다. 실제로 쓸 수 있는 주파수는 이 둘 사이의 "창"이며, 창의 위치는 계절과 태양 활동에 따라 움직입니다.</p>
-
-  <div class="card">
-    <div class="stage">
-      <svg id="p3svg" viewBox="0 0 900 430" aria-label="24시간 주파수 변화"></svg>
-      <div class="legend">
-        <span><i style="background:var(--pen)"></i>MUF (3,000 km 경로)</span>
-        <span><i style="background:var(--f2);height:2px"></i>foF2</span>
-        <span><i style="background:var(--abs)"></i>ALF (D층 흡수 한계)</span>
-        <span><i style="background:var(--ret)"></i>밴드 양호 (open)</span>
-        <span><i style="background:var(--marg)"></i>MUF 근접 (marginal)</span>
-        <span><i style="background:var(--abs);opacity:.6"></i>D층 흡수 (absorbed)</span>
-        <span><i style="background:var(--closed)"></i>관통 (closed)</span>
-      </div>
-      <div class="cap">중위도(북위 약 35°) 3,000 km 경로 기준 24시간 변화와 아마추어 밴드별 상태. 음영은 야간.</div>
-    </div>
-    <div class="ctrl">
-      <div><label>태양 흑점 수 SSN (sunspot number) <output id="p3so">100</output></label><input type="range" id="p3s" min="0" max="200" step="1" value="100">
-        <div class="chips" id="p3sc"><button data-v="10">극소기 (solar min) 10</button><button data-v="70">중간 70</button><button data-v="150">극대기 (solar max) 150</button></div></div>
-      <div><label>계절</label>
-        <div class="seg" id="p3season"><button data-v="summer">여름<small>Summer</small></button><button class="on" data-v="equinox">춘·추분<small>Equinox</small></button><button data-v="winter">겨울<small>Winter</small></button></div>
-      </div>
-      <div><label>시각 (지방시) <output id="p3to">12:00</output></label><input type="range" id="p3t" min="0" max="24" step="0.1" value="12">
-        <button type="button" class="act" id="p3play" style="margin-top:10px">▶ 하루 재생</button></div>
-    </div>
-  </div>
-
+<!-- ================= 27일 전망 ================= -->
+<section class="sec">
+  <div class="sechead"><h2>앞으로 27일 전망<small>27-day Outlook</small></h2><span class="badge-src" id="o27Iss">발표일 —</span></div>
+  <p class="lead">NOAA가 매주 월요일(UTC) 발표하는 앞으로 27일 동안의 날짜별 예측입니다. 태양은 약 27일에 한 바퀴 자전하므로, 지금 지구를 향한 활동 영역이나 코로나 구멍(coronal hole)이 27일 뒤 다시 돌아온다고 보고 예측합니다. 그래서 지자기 교란이 약 27일 간격으로 반복되는 경우가 많습니다.</p>
+  <div class="card"><div class="stage"><svg id="o27" viewBox="0 0 900 330" aria-label="27일 전망 그래프"></svg>
+    <div class="legend"><span><i style="background:var(--abs)"></i>SFI 관측</span><span><i style="background:var(--abs);opacity:.45"></i>SFI 예측</span><span><i style="background:var(--f2);height:8px"></i>Kp 하루 최대 (진한 막대 관측 · 연한 막대 예측)</span><span><i style="background:var(--marg);height:8px"></i>Kp 4</span><span><i style="background:var(--pen);height:8px"></i>Kp 5 이상</span><span><i style="background:var(--pen);height:2px"></i>Kp 5 (G1 지자기 폭풍)</span></div>
+    <div class="cap">자료: NOAA SWPC 27-day Space Weather Outlook Table, Daily Solar Data, Daily Geomagnetic Data. 날짜는 UTC 기준.</div></div></div>
   <div class="grid2">
-    <div class="card read"><h3 id="p3bh">밴드 상태</h3><table class="bandlist" id="p3bl"></table></div>
-    <div class="card read"><h3>선택 시각의 값</h3><dl class="kv" id="p3kv"></dl>
-      <p class="note">MUF 아래 약 85% 지점을 최적 운용 주파수(OWF, Optimum Working Frequency)로 보며, 한 달 중 약 90%의 날에 통하는 주파수입니다. MUF 자체는 약 절반의 날에만 통합니다.</p></div>
+    <div class="card read"><h3>이번 전망 요약</h3><ul class="why" id="o27sum"><li>불러오는 중…</li></ul></div>
+    <div class="card read"><h3>읽는 법</h3><p style="font-size:.9em;margin:0">SFI가 높게 이어지는 기간은 하이 밴드 운용 계획을 잡기 좋은 때입니다. Kp 5 이상이 예측된 날은 하이 밴드가 약해지고 고위도 경로가 불안정할 수 있으니, 콘테스트나 원거리 교신 일정은 그 전후를 피하는 것이 좋습니다. 예측은 일주일마다 새로 나오고, 갑작스러운 플레어나 CME는 반영하지 못합니다.</p></div>
   </div>
-
-  <ul class="points">
-    <li><b>하루 변화 (diurnal variation):</b> 일출 후 MUF가 빠르게 올라 정오 무렵 최고가 되고, 밤새 서서히 내려가 일출 직전(pre-dawn) 최저가 됩니다. 밤에는 D층이 사라져 ALF가 0에 가까워지므로 160 m·80 m가 살아납니다.</li>
-    <li><b>태양 주기 (solar cycle):</b> 약 9~14년 주기로 태양 활동이 오르내립니다. 극대기(solar maximum)에는 전자가 많아져 15 m·12 m·10 m 같은 높은 밴드가 열리고, 극소기(solar minimum)에는 낮은 밴드 위주로 운용하게 됩니다.</li>
-    <li><b>계절 (seasonal variation):</b> F층 정오 주파수는 춘·추분 무렵 가장 높습니다. 태양 활동이 높을 때는 겨울 정오 MUF가 여름보다 높게 나타나는데, 이를 계절 이상 현상(seasonal anomaly)이라 합니다. D층 흡수는 여름과 한낮에 큽니다.</li>
-  </ul>
-  <p class="note">그림의 곡선은 원리 설명용 단순 모형이며 실제 전파 예보가 아닙니다. 실제 MUF는 위도·경로 방향·지자기 상태에 따라 크게 달라집니다.</p>
 </section>
 
-<!-- ================= ④ ================= -->
-<section class="panel" id="p4">
-  <h2>태양 교란<small>Solar Disturbances</small></h2>
-  <p class="lead">태양은 전리층을 만들어 HF 전파를 가능하게 하지만, 태양 플레어(solar flare)나 코로나 질량 방출(CME, Coronal Mass Ejection) 같은 급격한 활동은 오히려 전파를 끊기도 합니다. 그래서 태양 활동이 높은데도 컨디션이 나쁜 날이 있습니다. 교란의 종류마다 영향을 받는 주파수와 대응 방법이 다르며, 특히 단파 페이드아웃과 전리층 폭풍은 대응이 정반대입니다.</p>
-
-  <div class="card">
-    <div class="ctrl" style="border-top:0;border-bottom:1px solid var(--line)">
-      <div><label>교란 종류</label>
-        <div class="seg" id="p4ev"><button class="on" data-v="swf">단파 페이드아웃<small>Short Wave Fade-out</small></button><button data-v="storm">전리층 폭풍<small>Ionospheric Storm</small></button><button data-v="pca">극관 흡수<small>Polar Cap Absorption</small></button><button data-v="es">돌발 E층<small>Sporadic E</small></button></div>
+<!-- ================= 태양 주기 (접힘) ================= -->
+<section class="sec">
+  <details class="card cycd" id="cycD">
+    <summary>
+      <div class="cycsum">
+        <div><h2 class="cych">태양 주기<small>Solar Cycle</small></h2><p class="cycline" id="cycLine">불러오는 중…</p></div>
+        <svg id="cycMini" viewBox="0 0 240 64" aria-hidden="true"></svg>
+        <span class="act cyctog"><span class="o">자세히 보기 ▾</span><span class="c">접기 ▴</span></span>
       </div>
+    </summary>
+    <div class="cycbody">
+      <p class="lead" id="cycTxt">월별 흑점 수와 NOAA 예측치를 불러오는 중입니다.</p>
+      <div class="stage" style="padding:0"><svg id="cyc" viewBox="0 0 900 340" aria-label="태양 주기 그래프"></svg>
+        <div class="legend"><span><i style="background:var(--muted);opacity:.5"></i>월별 흑점 수</span><span><i style="background:var(--accent)"></i>13개월 평활 흑점 수 (smoothed)</span><span><i style="background:var(--abs)"></i>NOAA 예측</span><span><i style="background:var(--abs);opacity:.25;height:8px"></i>예측 범위</span></div>
+        <div class="cap">자료: NOAA SWPC 관측 흑점 수(observed solar cycle indices)와 예측(predicted solar cycle).</div></div>
     </div>
-    <div class="stage">
-      <svg id="p4svg" viewBox="0 0 900 370" aria-label="교란 시 주파수별 신호 세기"></svg>
-      <div class="legend" id="p4leg"></div>
-      <div class="cap" id="p4cap"></div>
-    </div>
-  </div>
-  <div class="card evcard" id="p4card" style="margin-top:14px"></div>
+  </details>
+</section>
 
-  <h3 style="margin:24px 0 6px;font-size:1.02em">한눈에 비교</h3>
+<!-- ================= 지표 읽는 법 ================= -->
+<section class="sec">
+  <div class="sechead"><h2>지표 읽는 법<small>How to Read Each Index</small></h2></div>
+  <p class="lead">아래 기준값은 운용자들이 흔히 쓰는 경험적 기준입니다. 한 가지 값만 보지 말고, 태양 플럭스는 "높게 유지되는지", 지자기 지수는 "조용한지"를 함께 보는 것이 요령입니다.</p>
+
+  <div class="idx">
+    <article class="card read">
+      <h3>태양 플럭스 지수 SFI <small>Solar Flux Index, F10.7</small></h3>
+      <p>태양이 내는 파장 10.7 cm(2,800 MHz) 전파의 세기로, 단위는 sfu(solar flux unit)입니다. 전리층을 직접 만드는 것은 극자외선(EUV)이지만 지상에서는 잴 수 없어서, 그와 함께 움직이는 이 전파 세기를 대신 씁니다. 값이 높을수록 F층 전자가 많아져 MUF가 올라가고 20 m~10 m 같은 높은 밴드가 열립니다. 30 m 이하 낮은 밴드에는 영향이 작습니다.</p>
+      <table class="rng"><tr><th>SFI</th><th>하이 밴드 경향</th></tr>
+        <tr><td>70 미만</td><td><span class="lv p">나쁨</span> 극소기 수준, 15 m 이상 거의 닫힘</td></tr>
+        <tr><td>70–90</td><td><span class="lv f">낮음</span> 20 m 위주</td></tr>
+        <tr><td>90–100</td><td><span class="lv f">보통</span> 17 m·15 m 가끔</td></tr>
+        <tr><td>100–150</td><td><span class="lv g">양호</span> 15 m 주간 개방, 10 m 가끔</td></tr>
+        <tr><td>150 이상</td><td><span class="lv g">매우 양호</span> 12 m·10 m 주간 개방</td></tr></table>
+      <p class="tipx">하루 반짝 높은 값보다 <b>5~7일 이상 높게 유지</b>되어야 효과가 큽니다. 그래서 이 페이지는 해석에 7일 평균을 씁니다.</p>
+    </article>
+
+    <article class="card read">
+      <h3>흑점 수 SN <small>Sunspot Number</small></h3>
+      <p>태양 표면에 보이는 흑점의 수를 정해진 방식으로 센 값입니다. 흑점 자체가 전파를 돕는 것은 아니고, 흑점이 많다는 것은 태양이 활발해 EUV를 많이 낸다는 표시입니다. 태양은 약 27일에 한 바퀴 자전하므로, 활발한 흑점 영역이 지구를 향하는 며칠 동안 컨디션이 좋아졌다가 약 27일 뒤에 비슷한 상황이 반복되기도 합니다.</p>
+      <table class="rng"><tr><th>SN</th><th>경향</th></tr>
+        <tr><td>50 미만</td><td><span class="lv p">나쁨</span></td></tr>
+        <tr><td>50–75</td><td><span class="lv f">약함</span></td></tr>
+        <tr><td>75–100</td><td><span class="lv f">보통~양호</span></td></tr>
+        <tr><td>100–150</td><td><span class="lv g">양호</span></td></tr>
+        <tr><td>150 이상</td><td><span class="lv g">매우 양호</span></td></tr></table>
+      <p class="tipx">흑점이 많을수록 플레어가 일어날 가능성도 커집니다. 좋은 컨디션과 갑작스러운 두절이 함께 늘어나는 시기입니다.</p>
+    </article>
+
+    <article class="card read">
+      <h3>K 지수 · Kp 지수 <small>K-index, Planetary K-index</small></h3>
+      <p>3시간 동안 지구 자기장이 얼마나 흔들렸는지를 0~9로 나타냅니다. K는 한 관측소의 값이고, Kp는 전 세계 관측소 값을 모은 지구 전체 값입니다. 눈금이 로그에 가까워 1 차이가 꽤 큽니다. 낮을수록 전리층이 안정되어 전파에 유리합니다.</p>
+      <table class="rng"><tr><th>Kp</th><th>상태</th></tr>
+        <tr><td>0–1</td><td><span class="lv g">매우 조용</span> 모든 밴드에 가장 유리</td></tr>
+        <tr><td>2–3</td><td><span class="lv g">안정</span> 대체로 양호</td></tr>
+        <tr><td>4</td><td><span class="lv f">활발</span> 고위도·야간 경로부터 불안정</td></tr>
+        <tr><td>5</td><td><span class="lv p">G1 폭풍</span> 하이 밴드 약화</td></tr>
+        <tr><td>6–9</td><td><span class="lv p">G2–G5 폭풍</span> 전 대역 불안정, 심하면 두절</td></tr></table>
+    </article>
+
+    <article class="card read">
+      <h3>A 지수 · Ap 지수 <small>A-index, Planetary A-index</small></h3>
+      <p>하루 동안의 K 값 8개를 선형 눈금으로 바꿔 평균한 값으로, 그날 지자기가 전반적으로 얼마나 흔들렸는지 보여 줍니다(0~400). Ap는 지구 전체 값입니다. 지금 이 순간보다 "어제부터 이어진 분위기"를 보는 지표입니다.</p>
+      <table class="rng"><tr><th>A</th><th>상태 (NOAA 구분)</th></tr>
+        <tr><td>0–7</td><td><span class="lv g">조용 (quiet)</span></td></tr>
+        <tr><td>8–15</td><td><span class="lv g">약간 불안정 (unsettled)</span></td></tr>
+        <tr><td>16–29</td><td><span class="lv f">활발 (active)</span></td></tr>
+        <tr><td>30–49</td><td><span class="lv p">소규모 폭풍 (minor storm)</span></td></tr>
+        <tr><td>50 이상</td><td><span class="lv p">대규모 폭풍 (major storm)</span></td></tr></table>
+    </article>
+
+    <article class="card read">
+      <h3>X선 플럭스 <small>X-ray Flux, GOES 0.1–0.8 nm</small></h3>
+      <p>정지궤도 기상위성 GOES가 재는 태양 X선 세기입니다. 등급은 A·B·C·M·X 순으로 한 단계마다 10배씩 강해지고, 뒤의 숫자가 세부 크기입니다(예: M2.5). 강한 X선은 햇빛이 비치는 쪽 D층을 순간적으로 이온화해 HF를 흡수하므로, 단파 페이드아웃의 직접 원인입니다.</p>
+      <table class="rng"><tr><th>등급</th><th>세기 (W/m²)</th><th>HF 영향</th></tr>
+        <tr><td>A·B</td><td>10⁻⁷ 미만 ~ 10⁻⁶</td><td>영향 없음</td></tr>
+        <tr><td>C</td><td>10⁻⁶ ~ 10⁻⁵</td><td>거의 없음</td></tr>
+        <tr><td>M1 · M5</td><td>10⁻⁵ ~ 10⁻⁴</td><td>R1 · R2</td></tr>
+        <tr><td>X1 · X10 · X20</td><td>10⁻⁴ 이상</td><td>R3 · R4 · R5</td></tr></table>
+    </article>
+
+    <article class="card read">
+      <h3>행성간 자기장 Bz <small>IMF Bz</small></h3>
+      <p>태양풍에 실려 오는 자기장의 남북 성분입니다. 값이 음수(남쪽 방향)이면 지구 자기장과 맞물려 태양풍 에너지가 쉽게 들어오므로, 음수가 몇 시간 이상 이어지면 지자기 폭풍이 올 가능성이 커집니다. Kp보다 먼저 움직이는 "예고 신호"로 봅니다.</p>
+      <table class="rng"><tr><th>Bz (nT)</th><th>참고 기준</th></tr>
+        <tr><td>0 이상</td><td><span class="lv g">북쪽, 안정</span></td></tr>
+        <tr><td>0 ~ −5</td><td><span class="lv g">약간 남쪽</span></td></tr>
+        <tr><td>−5 ~ −10</td><td><span class="lv f">주의</span> 오래 이어지면 Kp 상승</td></tr>
+        <tr><td>−10 미만</td><td><span class="lv p">경계</span> 폭풍 가능성 높음</td></tr></table>
+    </article>
+  </div>
+
+  <h3 class="sub">NOAA 우주기상 등급 <small>NOAA Space Weather Scales</small></h3>
   <div class="card scroll"><table class="cmp">
-    <thead><tr><th></th><th>단파 페이드아웃 (SWF)</th><th>전리층 폭풍 (Ionospheric Storm)</th><th>극관 흡수 (PCA)</th><th>돌발 E층 (Es)</th></tr></thead>
+    <thead><tr><th>등급</th><th>R — 전파 두절 (Radio Blackout)</th><th>S — 태양 방사선 폭풍 (Solar Radiation Storm)</th><th>G — 지자기 폭풍 (Geomagnetic Storm)</th></tr></thead>
     <tbody>
-      <tr><th>원인</th><td>플레어 X선 → D층 이온화 급증</td><td>CME 등 → 지자기 교란 → F층 전자 밀도 감소</td><td>플레어의 고에너지 양성자 → 극지 D층 이온화</td><td>E 영역 안의 국지적 고밀도 전자층</td></tr>
-      <tr><th>시작·지속</th><td>즉시 시작, 수 분~수 시간</td><td>수 일</td><td>플레어 후 빠르면 10분, 최대 10일</td><td>수 분~수 시간, 예측 어려움</td></tr>
-      <tr><th>영향 경로</th><td>주간(일광) 구간을 지나는 경로만</td><td>고위도일수록 심함</td><td>극지방을 지나는 경로</td><td>중·저위도 여름 주간에 잦음</td></tr>
-      <tr><th>주파수 영향</th><td>낮은 주파수부터 가장 크게, 가장 늦게 회복</td><td>높은 주파수부터 관통</td><td>전 대역, 낮은 주파수일수록 큼</td><td>10 m·6 m 근거리 도약 개방, F층 차폐 가능</td></tr>
-      <tr><th>대응</th><td><b>더 높은 주파수</b>로</td><td><b>더 낮은 주파수</b>로</td><td>극지 경유 경로 회피</td><td>10 m·6 m 활용</td></tr>
-      <tr><th>NOAA 등급</th><td><b>R1–R5</b><br>전파 두절 (Radio Blackout)<br><span style="color:var(--muted)">X선 플레어 M1 ~ X20</span></td><td><b>G1–G5</b><br>지자기 폭풍 (Geomagnetic Storm)<br><span style="color:var(--muted)">Kp 5 ~ 9</span></td><td><b>S1–S5</b><br>태양 방사선 폭풍 (Solar Radiation Storm)<br><span style="color:var(--muted)">≥10 MeV 양성자 10 ~ 10⁵ pfu</span></td><td>해당 등급 없음</td></tr>
+      <tr><th>기준</th><td>X선 플레어 세기</td><td>≥10 MeV 양성자 플럭스</td><td>Kp 지수</td></tr>
+      <tr><th>1 (minor)</th><td>M1 — 주간 HF가 약하게, 가끔 끊김</td><td>10 pfu — 극지 HF에 약한 영향</td><td>Kp 5 — 고위도 HF 약화</td></tr>
+      <tr><th>2 (moderate)</th><td>M5 — 주간 HF가 수십 분 제한적으로 두절</td><td>10² pfu — 극지 HF 전파에 영향</td><td>Kp 6 — 고위도 HF 페이딩</td></tr>
+      <tr><th>3 (strong)</th><td>X1 — 주간 쪽 넓은 지역에서 약 1시간 두절</td><td>10³ pfu — 극지 HF 두절 가능</td><td>Kp 7 — HF가 간헐적으로 끊김</td></tr>
+      <tr><th>4 (severe)</th><td>X10 — 주간 쪽 대부분에서 1~2시간 두절</td><td>10⁴ pfu — 극지 HF 수일 두절</td><td>Kp 8 — HF가 산발적으로 끊김</td></tr>
+      <tr><th>5 (extreme)</th><td>X20 — 주간 쪽 전체에서 수 시간 완전 두절</td><td>10⁵ pfu — 극지 HF 완전 두절</td><td>Kp 9 — HF가 1~2일 끊길 수 있음</td></tr>
     </tbody>
   </table></div>
+  <p class="note">각 교란이 일어나는 원리는 <a href="index.html">전리층 원리</a> 페이지의 ④ 태양 교란 탭에서 볼 수 있습니다.</p>
+
+  <h3 class="sub">자주 생기는 오해 <small>Common Misconceptions</small></h3>
+  <ul class="points">
+    <li><b>SFI는 태양에서 오는 입자나 태양풍의 양이 아닙니다.</b> 10.7 cm 파장의 태양 전파 세기이며, 전리층을 만드는 극자외선의 대용 지표입니다. 입자와 태양풍은 Kp·A·Bz 쪽에서 봅니다.</li>
+    <li><b>K 지수 기준에서 5는 "보통"이 아닙니다.</b> Kp 5부터 NOAA G1 지자기 폭풍이며, 하이 밴드가 약해지기 시작합니다.</li>
+    <li><b>태양 자전 주기는 약 27일입니다.</b> 좋은 컨디션이나 교란이 약 27일 간격으로 되풀이되는 경우가 있어, 지난달 같은 시기를 참고하기도 합니다.</li>
+    <li><b>태양 주기의 극대기 시점은 주기마다 다릅니다.</b> 지금이 주기의 어디쯤인지는 위의 태양 주기 그래프에서 실제 자료로 확인하는 것이 정확합니다.</li>
+  </ul>
+
+  <h3 class="sub">더 보기 <small>Further Resources</small></h3>
+  <ul class="points">
+    <li><a href="https://www.swpc.noaa.gov/" target="_blank" rel="noopener">NOAA Space Weather Prediction Center</a> — 이 페이지 자료의 출처, 경보와 3일 예보</li>
+    <li><a href="https://www.hamqsl.com/solar.html" target="_blank" rel="noopener">HamQSL Solar-Terrestrial Data</a> — 블로그·QRZ 페이지에 많이 붙이는 전파 예보 위젯</li>
+    <li>국립전파연구원 우주전파센터 — 국내 이오노존데(이천·제주) 전리층 관측과 우주전파환경 경보</li>
+  </ul>
 </section>
 
 <footer>
-  고도 범위, 전자 수명, 홉 길이, 교란별 특성은 IPS Radio and Space Services(호주 정부), 「Introduction to HF Radio Propagation」을 기준으로 했습니다. 모든 그림과 수치 모형은 원리 설명용이며 실제 전파 예보를 대신하지 않습니다.
+  실시간 값은 NOAA SWPC 공개 자료를 그대로 불러와 표시하며, 밴드별 경향은 그 값에 경험적 기준을 적용한 참고용 추정입니다. 지표 기준값은 VE2XIP 「Understanding HF propagation reports」, NOAA Space Weather Scales를 바탕으로 정리했습니다.
 </footer>
 </main>
 
@@ -333,551 +419,385 @@ const $=s=>document.querySelector(s);
 const $$=s=>Array.from(document.querySelectorAll(s));
 function S(tag,attrs,parent){const e=document.createElementNS(NS,tag);if(attrs)for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
 function T(parent,x,y,text,attrs){const t=S('text',Object.assign({x:x,y:y},attrs||{}),parent);t.textContent=text;return t;}
+function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-const lerp=(a,b,t)=>a+(b-a)*t;
-const smooth=x=>{x=clamp(x,0,1);return x*x*(3-2*x);};
-const R=6371;
-const fp=ne=>8.98e-3*Math.sqrt(ne); /* ne: electrons/cm^3 -> MHz */
-const fmt=(v,d)=>v.toFixed(d===undefined?1:d);
-const SUP=['⁰','¹','²','³','⁴','⁵','⁶','⁷'];
-function segBind(id,cb){const box=document.getElementById(id);box.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;box.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));cb(b.dataset.v);});}
-function segSet(id,v){document.getElementById(id).querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.v===String(v)));}
-
-/* ---------- tabs & window resize ---------- */
-const renderers={};
 const MQ=window.matchMedia('(max-width:640px)');
 const isMob=()=>MQ.matches;
-function bump(svg,k){svg.querySelectorAll('text').forEach(t=>{const f=parseFloat(t.getAttribute('font-size')||'12');t.setAttribute('font-size',(f*k).toFixed(1));});}
-/* 창 크기 변경: 가로 폭이 실제로 바뀐 경우에만 현재 탭을 다시 그림
-   (휴대폰 스크롤 중 주소창이 숨었다 나타나며 생기는 세로 크기 변화는 무시) */
-let resizeTimer=null,lastW=window.innerWidth;
-window.addEventListener('resize',()=>{
-  if(window.innerWidth===lastW)return;
-  lastW=window.innerWidth;
-  clearTimeout(resizeTimer);
-  resizeTimer=setTimeout(()=>{
-    const activeTab=document.querySelector('.tab[aria-selected="true"]');
-    if(activeTab&&renderers[activeTab.dataset.p])renderers[activeTab.dataset.p]();
-  },120);
-});
-$$('.tab').forEach(b=>b.addEventListener('click',()=>{
-  /* 탭을 바꾸면 ①·③ 탭의 하루 재생 타이머를 모두 정지 */
-  window.dispatchEvent(new CustomEvent('tab-change-stop'));
-  $$('.tab').forEach(x=>x.setAttribute('aria-selected',String(x===b)));
-  $$('.panel').forEach(p=>p.classList.toggle('on',p.id===b.dataset.p));
-  if(renderers[b.dataset.p])renderers[b.dataset.p]();
-}));
 
-/* =========================================================
-   ① 전리층 구조
-   ========================================================= */
-(function(){
-  const svg=$('#p1svg');
-  const X0=86,X1=730,Y0=22,Y1=420;
-  const xOf=n=>X0+(Math.log10(Math.max(n,10))-1)/6*(X1-X0);
-  const yOf=h=>Y1-h/500*(Y1-Y0);
-  const REG=[
-    {k:'D',lo:50,hi:90,c:'var(--d)',name:'D 영역 (D region)',
-     txt:'HF 전파를 굴절시키지 않고 흡수합니다. 주파수가 낮을수록 흡수가 커서, 낮 동안 160 m·80 m 신호가 약해지는 주원인입니다. 태양 복사가 사라지면 거의 소멸하므로 밤에는 흡수가 매우 작아집니다.',life:'—'},
-    {k:'E',lo:90,hi:140,c:'var(--e)',name:'E 영역 (E region)',
-     txt:'낮에는 수직 입사 기준 약 3~4 MHz까지 반사하고, 비스듬히 입사하는 전파는 더 높은 주파수까지 굴절시켜 짧은 도약(skip, 1홉 최대 약 1,800 km)을 만듭니다. 돌발 E층(sporadic E)이 생기는 고도이기도 합니다.',life:'약 20초'},
-    {k:'F1',lo:140,hi:210,c:'var(--f1)',name:'F1 영역 (F1 region)',
-     txt:'낮에만 나타나며, 태양 주기의 시기에 따라 F2와 구별되지 않고 하나의 F 영역으로 합쳐지기도 합니다. 그래서 전파 모드를 검토할 때는 보통 따로 다루지 않습니다.',life:'약 1분'},
-    {k:'F2',lo:210,hi:500,c:'var(--f2)',name:'F2 영역 (F2 region)',
-     txt:'HF 전파에서 가장 중요한 영역입니다. 24시간 존재하고, 고도가 가장 높아 가장 긴 도약(1홉 최대 약 3,200 km)을 만들며, HF 대역에서 가장 높은 주파수를 반사합니다. 전자 수명이 길어 밤에도 남습니다.',life:'약 20분'}
-  ];
-  let t=12,sel='F2',timer=null;
-  const SR=6.3,SS=18.6;
-  const chap=(h,L)=>{const z=(h-L.hm)/L.H;return L.Nm*Math.exp(0.5*(1-z-Math.exp(-z)));};
-  /* 태양 천정각 계수(정오 1) */
-  const sunC=tt=>(tt<=SR||tt>=SS)?0:Math.sin(Math.PI*(tt-SR)/(SS-SR));
-  const dayF=tt=>smooth((tt-SR+0.4)/0.8)*(1-smooth((tt-SS+0.4)/0.8));
-  /* F2: 수명이 길어 해를 늦게 따라가는 foF2 (③ 탭 모형과 같은 형태, 흑점 수 100) */
-  function foF2(tt){const noon=10.08,night=3.8,eve=Math.min(night*1.45,noon*0.9),te=SS+2.5;
-    const track=x=>{if(x>=SR&&x<=te)return lerp(night,eve,(x-SR)/(te-SR));const y=x<SR?x+24:x;return lerp(eve,night,(y-te)/(SR+24-te));};
-    const w=smooth((tt-SR)/3.2)*(1-smooth((tt-(SS-1.0))/3.5));const tr=track(tt);return tr+(noon-tr)*w;}
-  function layers(tt){
-    const c=sunC(tt),dl=dayF(tt),f2=foF2(tt);
-    return [
-      {k:'D',Nm:12+2.5e3*c,hm:78,H:7},
-      {k:'E',Nm:4e3+1.5e5*Math.sqrt(c),hm:110,H:9},
-      {k:'F1',Nm:600+3.2e5*Math.sqrt(c),hm:180,H:20},
-      {k:'F2',Nm:Math.pow(f2/8.98e-3,2),hm:300+25*(1-dl),H:55+5*(1-dl)}
-    ];
-  }
-  function ne(h,Ls){let s=0;for(const L of Ls)s+=chap(h,L);return s;}
-  function hm(x){x=((x%24)+24)%24;const h=Math.floor(x),m=Math.round((x-h)*60);return String(m===60?h+1:h).padStart(2,'0')+':'+String(m===60?0:m).padStart(2,'0');}
+const BASE='https://services.swpc.noaa.gov/';
+const URL_={
+  flux:'products/summary/10cm-flux.json',
+  dsd:'text/daily-solar-indices.txt',
+  dgd:'text/daily-geomagnetic-indices.txt',
+  kp:'products/noaa-planetary-k-index.json',
+  kpf:'products/noaa-planetary-k-index-forecast.json',
+  xray:'json/goes/primary/xrays-6-hour.json',
+  flare:'json/goes/primary/xray-flares-latest.json',
+  scales:'products/noaa-scales.json',
+  magS:'products/summary/solar-wind-mag-field.json',
+  obs:'json/solar-cycle/observed-solar-cycle-indices.json',
+  pred:'json/solar-cycle/predicted-solar-cycle.json',
+  o27:'text/27-day-outlook.txt'
+};
+function get(key,asText){
+  const ctl=new AbortController();const to=setTimeout(()=>ctl.abort(),15000);
+  return fetch(BASE+URL_[key]+(key==='obs'||key==='pred'?'':'?t='+Date.now()),{signal:ctl.signal,cache:'no-store'})
+    .then(r=>{clearTimeout(to);if(!r.ok)throw new Error(r.status);return asText?r.text():r.json();});
+}
+const fmtT=s=>{const d=new Date(/Z$|[+-]\d\d:?\d\d$/.test(s)?s:s+'Z');if(isNaN(d))return s;return d.toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false});};
+const num=v=>(v==null||v===''||isNaN(+v))?null:+v;
 
-  function draw(){
-    svg.replaceChildren();
-    const Ls=layers(t), c=sunC(t), night=c<=0;
-    const defs=S('defs',null,svg);
-    const g0=S('linearGradient',{id:'p1sky',x1:0,y1:0,x2:0,y2:1},defs);
-    S('stop',{offset:0,'stop-color':'var(--sky2)'},g0);S('stop',{offset:1,'stop-color':'var(--sky1)'},g0);
-    S('rect',{x:X0,y:Y0,width:X1-X0,height:Y1-Y0,fill:'url(#p1sky)',stroke:'var(--line)'},svg);
-    if(night)S('rect',{x:X0,y:Y0,width:X1-X0,height:Y1-Y0,fill:'var(--night)'},svg);
-    /* region bands + pill labels (clickable) */
-    const pres={D:c>0.02,E:true,F1:c>0.06,F2:true};
-    const vis={D:c,E:0.35+0.65*Math.sqrt(c),F1:Math.sqrt(c),F2:1};
-    REG.forEach(r=>{
-      const op=vis[r.k], on=sel===r.k;
-      const g=S('g',{class:'rgn'},svg);
-      S('rect',{class:'band',x:X0,y:yOf(r.hi),width:X1-X0,height:yOf(r.lo)-yOf(r.hi),fill:r.c,'fill-opacity':(on?0.22:0.1)*Math.max(op,0.25),stroke:on?r.c:'none','stroke-width':1.5},g);
-      const label=r.k+(pres[r.k]?'':' · 야간 소멸')+'  ›';
-      const ly=yOf((r.lo+Math.min(r.hi,r.k==='F2'?300:r.hi))/2);
-      const kk=isMob()?1.25:1, w=(label.length*7.6+18)*kk;
-      S('rect',{class:'pill',x:X0+8,y:ly-11*kk,width:w,height:22*kk,rx:11*kk,fill:on?r.c:'var(--panel)',stroke:r.c,'stroke-width':1.5},g);
-      T(g,X0+8+w/2,ly+4.5*kk,label,{'text-anchor':'middle',fill:on?'#fff':r.c,'font-size':12.5,'font-weight':700});
-      g.addEventListener('click',()=>{sel=r.k;draw();});
-    });
-    T(svg,X1-8,Y1-10,'👆 영역 이름을 누르면 설명',{'text-anchor':'end','font-size':12,fill:'var(--muted)'});
-    /* clock */
-    T(svg,X0+10,Y0+24,(night?'☾ ':'☀ ')+hm(t)+(night?'  야간':'  주간'),{'text-anchor':'start','font-size':15,'font-weight':700,fill:night?'var(--f2)':'var(--abs)',class:'mono'});
-    /* grid */
-    for(let e=1;e<=7;e++){const x=xOf(Math.pow(10,e));S('line',{x1:x,y1:Y0,x2:x,y2:Y1,stroke:'var(--line)','stroke-dasharray':'2 4'},svg);T(svg,x,Y1+18,'10'+SUP[e],{'text-anchor':'middle','font-size':12,fill:'var(--muted)',class:'mono'});}
-    for(let h=0;h<=500;h+=100){const y=yOf(h);S('line',{x1:X0-5,y1:y,x2:X0,y2:y,stroke:'var(--muted)'},svg);T(svg,X0-9,y+4,String(h),{'text-anchor':'end','font-size':12,fill:'var(--muted)',class:'mono'});}
-    T(svg,(X0+X1)/2,Y1+40,'전자 밀도 (electrons/cm³, 로그 눈금)',{'text-anchor':'middle','font-size':13,fill:'var(--muted)'});
-    T(svg,22,(Y0+Y1)/2,'고도 (km)',{'text-anchor':'middle','font-size':13,fill:'var(--muted)',transform:'rotate(-90 22 '+((Y0+Y1)/2)+')'});
-    /* profile */
-    let d='';
-    for(let h=60;h<=500;h+=2){const n=ne(h,Ls);d+=(d?'L':'M')+xOf(n).toFixed(1)+' '+yOf(h).toFixed(1);}
-    S('path',{d:d,fill:'none',stroke:'var(--ink)','stroke-width':2.4,'stroke-linejoin':'round'},svg);
-    /* peaks */
-    const kv=$('#p1kv');kv.replaceChildren();
-    [['E',95,140,'foE'],['F1',150,215,'foF1'],['F2',220,480,'foF2']].forEach(([k,lo,hi,name])=>{
-      let best=0,bh=lo;for(let h=lo;h<=hi;h+=1){const n=ne(h,Ls);if(n>best){best=n;bh=h;}}
-      const L=Ls.find(x=>x.k===k);
-      const present = k==='F2' || (k==='E'?L.Nm>2e4:c>0.15);
-      const dt=document.createElement('dt');dt.textContent=name;const dd=document.createElement('dd');
-      if(present){
-        const f=fp(best);dd.textContent=fmt(f)+' MHz';
-        const x=xOf(best),y=yOf(bh);
-        const col=REG.find(r=>r.k===k).c;
-        S('circle',{cx:x,cy:y,r:4.5,fill:col,stroke:'var(--panel)','stroke-width':1.5},svg);
-        T(svg,x+9,y-6,name+' '+fmt(f)+' MHz',{'font-size':12,fill:col,'font-weight':700,class:'mono'});
-      } else dd.textContent='— (소멸)';
-      kv.append(dt,dd);
-    });
-    /* info */
-    const r=REG.find(x=>x.k===sel);
-    const info=$('#p1info');
-    info.replaceChildren();
-    const h3=document.createElement('h3');h3.textContent=r.name;h3.style.color=r.c;
-    const tag=document.createElement('div');tag.className='tag';tag.textContent='고도 '+r.lo+'–'+(r.k==='F2'?'500+':r.hi)+' km · 전자 수명 '+r.life;
-    const p=document.createElement('p');p.textContent=r.txt;
-    info.append(h3,tag,p);
-    $('#p1t').value=t;$('#p1to').textContent=hm(t)+(night?' (야간)':' (주간)');
-    $$('#p1pre button').forEach(b=>b.classList.toggle('on',Math.abs(+b.dataset.v-t)<0.05));
-    if(isMob())bump(svg,1.25);
-  }
-  const stop=()=>{if(timer){clearInterval(timer);timer=null;$('#p1play').textContent='▶ 하루 재생';}};
-  window.addEventListener('tab-change-stop',stop);
-  $('#p1t').addEventListener('input',e=>{stop();t=+e.target.value;draw();});
-  $('#p1pre').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;stop();t=+b.dataset.v;draw();});
-  $('#p1play').addEventListener('click',()=>{
-    if(timer){stop();return;}
-    $('#p1play').textContent='■ 정지';
-    timer=setInterval(()=>{t=+(t+0.1).toFixed(1);if(t>24)t=0;draw();},70);
+/* ---------- parsers ---------- */
+function parseDSD(t){const rows=[];t.split('\n').forEach(l=>{if(!/^\d{4} \d\d \d\d/.test(l))return;const a=l.trim().split(/\s+/);rows.push({date:a[0]+'-'+a[1]+'-'+a[2],flux:num(a[3]),ssn:num(a[4])});});return rows;}
+function parseDGD(t){const rows=[];t.split('\n').forEach(l=>{if(!/^\d{4} \d\d \d\d/.test(l))return;const m=l.match(/(-?\d+)\s+(-?\d+\.\d\d)/);if(!m)return;
+  const ks=(l.match(/-?\d+\.\d\d/g)||[]).slice(-8).map(Number).filter(v=>v>=0);
+  rows.push({date:l.slice(0,10).replace(/ /g,'-'),A:+m[1],kpMax:ks.length?Math.max(...ks):null});});return rows;}
+/* 27-day outlook: '2026 Nov 09     125          15          4' */
+const MON={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+function parse27(t){const rows=[];let iss=null;t.split('\n').forEach(l=>{const im=l.match(/^:Issued:\s*(\d{4}) (\w{3}) (\d\d) (\d\d)(\d\d)/);if(im)iss=new Date(Date.UTC(+im[1],MON[im[2]],+im[3],+im[4],+im[5]));
+  const m=l.match(/^(\d{4}) (\w{3}) (\d\d)\s+(\d+)\s+(\d+)\s+(\d+)/);if(m&&MON[m[2]]!=null)rows.push({d:Date.UTC(+m[1],MON[m[2]],+m[3]),sfi:+m[4],ap:+m[5],kp:+m[6]});});return {iss:iss,rows:rows};}
+function rowsOf(j){ /* products/*.json: array of objects, or array of arrays with header */
+  if(!Array.isArray(j)||!j.length)return [];
+  if(Array.isArray(j[0])){const h=j[0];return j.slice(1).map(r=>{const o={};h.forEach((k,i)=>o[k]=r[i]);return o;});}
+  return j;
+}
+const kpVal=o=>num(o.Kp!=null?o.Kp:(o.kp!=null?o.kp:o.estimated_kp));
+function xClass(f){if(!(f>0))return '—';const L=['A','B','C','M','X'];let e=Math.floor(Math.log10(f));let i=clamp(e+8,0,4);if(e>=-4)i=4;const base=Math.pow(10,i-8);return L[i]+(f/base).toFixed(1);}
+function gOfKp(k){return k>=9?5:k>=8?4:k>=7?3:k>=6?2:k>=5?1:0;}
+
+/* ---------- levels ---------- */
+const LV={
+  sfi:v=>v<70?['p','나쁨']:v<90?['f','낮음']:v<100?['f','보통']:v<150?['g','양호']:['g','매우 양호'],
+  ssn:v=>v<50?['p','나쁨']:v<75?['f','약함']:v<100?['f','보통~양호']:v<150?['g','양호']:['g','매우 양호'],
+  kp:v=>v<2?['g','매우 조용']:v<4?['g','안정']:v<5?['f','활발']:['p','G'+gOfKp(v)+' 폭풍'],
+  a:v=>v<8?['g','조용']:v<16?['g','약간 불안정']:v<30?['f','활발']:v<50?['p','소규모 폭풍']:['p','대규모 폭풍'],
+  x:f=>f<1e-5?['g','영향 없음']:f<5e-5?['f','R1 수준']:['p',f<1e-4?'R2 수준':'R3 이상'],
+  bz:v=>v>=0?['g','북쪽 · 안정']:v>-5?['g','약간 남쪽']:v>-10?['f','주의']:['p','경계']
+};
+const COLOR={g:'var(--ret)',f:'var(--marg)',p:'var(--pen)',n:'var(--muted)'};
+
+/* ---------- state ---------- */
+const D={};let mode='live';let liveOK=false;
+
+/* ---------- sparkline helpers ---------- */
+function spark(vals,opt){
+  const W=300,H=64,P=4;const svg=S('svg',{viewBox:`0 0 ${W} ${H}`,'aria-hidden':'true'});
+  const v=vals.filter(x=>x!=null);if(v.length<2)return svg;
+  let lo=opt.min!=null?opt.min:Math.min(...v),hi=opt.max!=null?opt.max:Math.max(...v);if(hi-lo<1e-9){hi+=1;lo-=1;}
+  const tf=opt.log?(x=>Math.log10(x)):(x=>x);const L=tf(lo),Hh=tf(hi);
+  const x=i=>P+i*(W-2*P)/(vals.length-1), y=val=>H-P-(tf(val)-L)/(Hh-L)*(H-2*P-12);
+  (opt.refs||[]).forEach(r=>{const yy=y(r.v);if(yy<P||yy>H)return;S('line',{x1:P,x2:W-P,y1:yy,y2:yy,stroke:r.c||'var(--line)','stroke-dasharray':'3 3'},svg);T(svg,W-P,yy-2,r.t,{'text-anchor':'end','font-size':9,fill:r.c||'var(--muted)',class:'mono'});});
+  if(opt.bars){const bw=(W-2*P)/vals.length;vals.forEach((val,i)=>{if(val==null)return;const yy=y(val);S('rect',{x:P+i*bw+0.5,y:yy,width:Math.max(bw-1,1),height:H-P-yy,fill:opt.color?opt.color(val):'var(--accent)',rx:1},svg);});}
+  else{let d='';vals.forEach((val,i)=>{if(val==null)return;d+=(d?'L':'M')+x(i).toFixed(1)+' '+y(val).toFixed(1);});S('path',{d:d,fill:'none',stroke:opt.stroke||'var(--accent)','stroke-width':1.8,'stroke-linejoin':'round'},svg);
+    const li=vals.length-1;if(vals[li]!=null)S('circle',{cx:x(li),cy:y(vals[li]),r:3,fill:opt.stroke||'var(--accent)'},svg);}
+  if(opt.cap)T(svg,P,10,opt.cap,{'font-size':9.5,fill:'var(--muted)'});
+  return svg;
+}
+
+/* ---------- render: scales ---------- */
+function renderScales(){
+  const box=$('#scales');box.replaceChildren();const sc=D.scales;
+  const defs=[['R','전파 두절','Radio Blackout'],['S','태양 방사선 폭풍','Solar Radiation Storm'],['G','지자기 폭풍','Geomagnetic Storm']];
+  defs.forEach(([k,ko,en])=>{
+    const card=el('div','card scl');
+    let cur=null,yday=null,fc='';
+    if(sc){cur=num(sc['0']&&sc['0'][k]&&sc['0'][k].Scale);yday=num(sc['-1']&&sc['-1'][k]&&sc['-1'][k].Scale);
+      const f=sc['1']&&sc['1'][k];
+      if(f){if(k==='R')fc=`오늘 예보: R1–R2 ${f.MinorProb||'—'}% · R3 이상 ${f.MajorProb||'—'}%`;
+        else if(k==='S')fc=`오늘 예보: S1 이상 ${f.Prob||'—'}%`;
+        else fc=`오늘 예보: G${f.Scale!=null?f.Scale:'—'}`;}}
+    const lvl=cur==null?'n':cur===0?'g':cur<3?'f':'p';
+    const big=el('div','big',(cur==null?'—':k+cur));big.style.background=lvl==='n'?'var(--muted)':COLOR[lvl];
+    card.append(big,el('div','nm',`${ko}<small>${k} — ${en}</small>`),el('div','fc',`어제 최대 ${yday==null?'—':k+yday}`),el('div','fc',fc||'예보 정보 없음'));
+    box.append(card);
   });
-  renderers.p1=draw;draw();
-})();
+}
 
-/* =========================================================
-   공통: 전파 경로 기하 (구면 지구, 가상 높이 h')
-   ========================================================= */
-function geom(beta,h){const c=R*Math.cos(beta)/(R+h);const phi=Math.acos(clamp(c,-1,1))-beta;return {phi:phi,i:Math.PI/2-beta-phi};}
-/* 3,000 km 경로의 F층 sec(i) — MUF(3000) = foF2 * M */
-const M3000=(function(){const target=3000/(2*R);let a=0.0005,b=1.5;for(let k=0;k<60;k++){const m=(a+b)/2;if(geom(m,300).phi>target)a=m;else b=m;}return 1/Math.cos(geom((a+b)/2,300).i);})();
+/* ---------- render: metric cards ---------- */
+function metric(o){
+  const c=el('div','card mt');
+  c.append(el('div','nm',`${o.name}<small>${o.en}</small>`));
+  const row=el('div','row');row.append(el('span','val',o.val==null?'—':o.val));if(o.unit)row.append(el('span','unit',o.unit));
+  if(o.lv)row.append(el('span','lv '+o.lv[0],o.lv[1]));c.append(row);
+  c.append(el('div','desc',o.desc||''));
+  if(o.svg)c.append(o.svg);
+  c.append(el('div','when',o.when||''));
+  return c;
+}
+function renderMetrics(){
+  const box=$('#metrics');box.replaceChildren();
+  /* SFI */
+  const s30=(D.dsd||[]).slice(-30);
+  box.append(metric({name:'태양 플럭스 SFI',en:'10.7 cm, sfu',val:D.sfi,lv:D.sfi!=null?LV.sfi(D.sfi):null,
+    desc:D.sfi7!=null?`7일 평균 ${D.sfi7.toFixed(0)} — 하이 밴드(20 m~10 m) 개방의 기준`:'하이 밴드(20 m~10 m) 개방의 기준',
+    svg:s30.length?spark(s30.map(r=>r.flux),{stroke:'var(--abs)',cap:'최근 30일',refs:[{v:100,t:'100'},{v:150,t:'150'}]}):null,
+    when:D.sfiTime?'측정 '+fmtT(D.sfiTime):''}));
+  /* SSN */
+  box.append(metric({name:'흑점 수 SN',en:'Sunspot Number',val:D.ssn,lv:D.ssn!=null?LV.ssn(D.ssn):null,
+    desc:D.ssn7!=null?`7일 평균 ${D.ssn7.toFixed(0)} — 태양 활동 정도`:'태양 활동 정도',
+    svg:s30.length?spark(s30.map(r=>r.ssn),{stroke:'var(--f2)',cap:'최근 30일',min:0}):null,
+    when:D.ssnDate?'기준일 '+D.ssnDate:''}));
+  /* Kp */
+  const kcol=v=>v<4?'var(--ret)':v<5?'var(--marg)':'var(--pen)';
+  box.append(metric({name:'Kp 지수',en:'Planetary K-index',val:D.kp!=null?D.kp.toFixed(2).replace(/\.?0+$/,''):null,lv:D.kp!=null?LV.kp(D.kp):null,
+    desc:D.kpf!=null?`앞으로 24시간 예상 최대 Kp ${D.kpf.toFixed(1)}${D.kpf>=5?' (G'+gOfKp(D.kpf)+')':''}`:'3시간 동안의 지자기 흔들림',
+    svg:D.kp7&&D.kp7.length?spark(D.kp7,{bars:true,min:0,max:9,color:kcol,cap:'최근 7일 (3시간 단위)',refs:[{v:5,t:'G1',c:'var(--pen)'}]}):null,
+    when:D.kpTime?'구간 시작 '+fmtT(D.kpTime):''}));
+  /* A */
+  const a30=(D.dgd||[]).filter(r=>r.A>=0).slice(-30);
+  box.append(metric({name:'A 지수 (Ap)',en:'Planetary A-index',val:D.A,lv:D.A!=null?LV.a(D.A):null,
+    desc:D.Atoday!=null?`오늘 추정 ${D.Atoday} — 하루 동안의 지자기 분위기`:'하루 동안의 지자기 분위기',
+    svg:a30.length?spark(a30.map(r=>r.A),{bars:true,min:0,max:Math.max(50,...a30.map(r=>r.A)),color:v=>v<16?'var(--ret)':v<30?'var(--marg)':'var(--pen)',cap:'최근 30일',refs:[{v:30,t:'30',c:'var(--pen)'}]}):null,
+    when:D.Adate?'기준일 '+D.Adate+' (전날 확정값)':''}));
+  /* X-ray */
+  const fl=D.flare;
+  box.append(metric({name:'X선 플럭스',en:'GOES 0.1–0.8 nm',val:D.xflux!=null?xClass(D.xflux):null,lv:D.xflux!=null?LV.x(D.xflux):null,
+    desc:`6시간 최대 ${D.x6max!=null?xClass(D.x6max):'—'}${fl&&fl.max_class?` · 최근 플레어 ${fl.max_class} (${fmtT(fl.max_time)})`:''}`,
+    svg:D.x6&&D.x6.length?spark(D.x6,{log:true,min:1e-8,max:Math.max(2e-4,...D.x6.filter(Boolean)),stroke:'var(--pen)',cap:'최근 6시간 (로그 눈금)',refs:[{v:1e-6,t:'C'},{v:1e-5,t:'M',c:'var(--marg)'},{v:1e-4,t:'X',c:'var(--pen)'}]}):null,
+    when:D.xTime?'측정 '+fmtT(D.xTime):''}));
+  /* Bz */
+  box.append(metric({name:'행성간 자기장 Bz',en:'IMF Bz (GSM)',val:D.bz!=null?(D.bz>0?'+':'')+D.bz.toFixed(1):null,unit:'nT',lv:D.bz!=null?LV.bz(D.bz):null,
+    desc:D.bt!=null?`전체 세기 Bt ${D.bt.toFixed(1)} nT — 음수가 오래 이어지면 폭풍 예고`:'음수가 오래 이어지면 폭풍 예고',
+    svg:D.bz6&&D.bz6.length?spark(D.bz6,{min:Math.min(-12,...D.bz6.filter(v=>v!=null)),max:Math.max(12,...D.bz6.filter(v=>v!=null)),stroke:'var(--e)',cap:'최근 6시간',refs:[{v:0,t:'0'},{v:-10,t:'−10',c:'var(--pen)'}]}):null,
+    when:D.bzTime?'측정 '+fmtT(D.bzTime):''}));
+}
 
-/* =========================================================
-   ② 굴절과 MUF
-   ========================================================= */
-(function(){
-  const svg=$('#p2svg');
-  const BANDS=[['160m',1.9],['80m',3.6],['40m',7.1],['30m',10.12],['20m',14.2],['17m',18.1],['15m',21.2],['12m',24.9],['10m',28.5]];
-  const st={mode:'single',day:true,foF2:9,f:14.2,beta:15,sel:4};
-  let DMAX=6600, XL=40, XR=880, W=900, H=450;
-  const xOfD=d=>XL+(d+120)/(DMAX+120)*(XR-XL);
-  const groundY=x=>{const u=(x-W/2)/(W/2-10);return 410-42*(W/900)*(1-u*u);};
-  const AY=0.62;
-  const P=(theta,alt)=>{const x=xOfD(R*theta);return [x,groundY(x)-alt*AY];};
-  const params=()=>({foE:st.day?3.4:0,foF2:st.foF2,hF:st.day?300:320,alf:st.day?4.0:0});
-
-  function trace(f,beta,pr){
-    if(pr.foE>0){const g=geom(beta,110);if(f<=pr.foE/Math.cos(g.i))return {layer:'E',phi:g.phi,i:g.i,fo:pr.foE,hb:92,top:128};}
-    const g=geom(beta,pr.hF);
-    if(f<=pr.foF2/Math.cos(g.i))return {layer:'F',phi:g.phi,i:g.i,fo:pr.foF2,hb:205,top:330};
-    return {layer:'P',phi:g.phi,i:g.i};
-  }
-  function mufAt(beta,pr){const g=geom(beta,pr.hF);return pr.foF2/Math.cos(g.i);}
-  function skip(f,pr){
-    if(f<=pr.foF2)return {d:0};
-    if(mufAt(0.0005,pr)<f)return {d:null};
-    let a=0.0005,b=Math.PI/2-0.001;
-    for(let k=0;k<60;k++){const m=(a+b)/2;if(mufAt(m,pr)>=f)a=m;else b=m;}
-    return {d:2*R*geom(a,pr.hF).phi,beta:a};
-  }
-  function upPts(theta0,beta,hTo,n){
-    const sb=Math.sin(beta),cb=Math.cos(beta);
-    const sE=-R*sb+Math.sqrt(R*R*sb*sb+2*R*hTo+hTo*hTo);
-    const out=[];for(let k=0;k<=n;k++){const s=sE*k/n;const r=Math.sqrt(R*R+s*s+2*R*s*sb);out.push([theta0+Math.atan2(s*cb,R+s*sb),r-R]);}
-    return out;
-  }
-  function rayPath(f,beta,pr,theta0){
-    const tr=trace(f,beta,pr);
-    const str=pts=>pts.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join('L');
-    if(tr.layer==='P'){
-      /* MUF에 가까울수록 많이 휘어진 뒤 관통 */
-      const k=clamp((1.6-f*Math.cos(tr.i)/pr.foF2)/0.6,0,1);
-      const up=upPts(theta0,beta,205,12).map(p=>P(p[0],p[1]));
-      const mid=upPts(theta0,beta,380,1)[1], far=upPts(theta0,beta,560,1)[1];
-      const C=P(mid[0]+k*0.012,mid[1]-k*20), Z=P(far[0]+k*0.06,560-k*90);
-      return {tr:tr,d:'M'+str(up)+'Q'+C[0].toFixed(1)+' '+C[1].toFixed(1)+' '+Z[0].toFixed(1)+' '+Z[1].toFixed(1),end:theta0,tip:Z,dist:null};
-    }
-    /* 주파수가 높을수록 층 더 높은 곳에서 굴절 → 실효 반사 높이가 올라가 도약 거리 증가 */
-    const q=clamp(Math.pow(f*Math.cos(tr.i)/tr.fo,2),0,1);
-    const hr=tr.hb+8+(tr.top-tr.hb-8)*q;
-    const phi=geom(beta,hr).phi;
-    const up=upPts(theta0,beta,tr.hb,14);
-    const thE=up[up.length-1][0];
-    const apex=P(theta0+phi,hr);
-    const thX=theta0+2*phi-(thE-theta0);
-    const E=P(thE,tr.hb),X=P(thX,tr.hb);
-    const C=[2*apex[0]-0.5*(E[0]+X[0]),2*apex[1]-0.5*(E[1]+X[1])];
-    const upS=up.map(p=>P(p[0],p[1]));
-    const dnS=up.slice().reverse().map(p=>P(theta0+2*phi-(p[0]-theta0),p[1]));
-    let d='M'+str(upS);
-    d+='Q'+C[0].toFixed(1)+' '+C[1].toFixed(1)+' '+X[0].toFixed(1)+' '+X[1].toFixed(1);
-    d+='L'+str(dnS);
-    return {tr:tr,d:d,end:theta0+2*phi,apex:apex,dist:2*R*phi};
-  }
-  function band(lo,hi){
-    let top='',bot='';
-    for(let dd=-200;dd<=DMAX+200;dd+=100){const th=dd/R;const a=P(th,hi),b=P(th,lo);top+=(top?'L':'M')+a[0].toFixed(1)+' '+a[1].toFixed(1);bot=b[0].toFixed(1)+' '+b[1].toFixed(1)+(bot?'L'+bot:'');}
-    return top+'L'+bot+'Z';
-  }
-  function colorFor(tr,absorbed){if(absorbed)return 'var(--abs)';if(tr.layer==='E')return 'var(--retE)';if(tr.layer==='F')return 'var(--ret)';return 'var(--pen)';}
-  function marker(defs,id,col){const m=S('marker',{id:id,viewBox:'0 0 10 10',refX:8,refY:5,markerWidth:7,markerHeight:7,orient:'auto-start-reverse'},defs);S('path',{d:'M0 0L10 5L0 10z',fill:col},m);}
-
-  function draw(){
-    const mob=isMob();W=mob?600:900;DMAX=mob?3000:6600;XL=mob?24:40;XR=W-20;H=mob?480:450;svg.setAttribute('viewBox','0 0 '+W+' '+H);
-    svg.replaceChildren();
-    const pr=params();
-    const defs=S('defs',null,svg);
-    const sky=S('linearGradient',{id:'p2sky',x1:0,y1:0,x2:0,y2:1},defs);
-    S('stop',{offset:0,'stop-color':st.day?'var(--sky2)':'var(--soft)'},sky);S('stop',{offset:1,'stop-color':'var(--sky1)'},sky);
-    marker(defs,'mP','var(--pen)');marker(defs,'mF','var(--ret)');marker(defs,'mE','var(--retE)');marker(defs,'mA','var(--abs)');
-    S('rect',{x:0,y:0,width:W,height:H,fill:'url(#p2sky)'},svg);
-    /* layers */
-    if(st.day){S('path',{d:band(50,90),fill:'var(--d)','fill-opacity':0.22},svg);}
-    S('path',{d:band(90,140),fill:'var(--e)','fill-opacity':st.day?0.22:0.07},svg);
-    S('path',{d:band(200,420),fill:'var(--f2)','fill-opacity':0.08+0.014*st.foF2},svg);
-    const lab=(alt,txt,col)=>{const p=P((DMAX-120)/R,alt);T(svg,p[0],p[1]+4,txt,{'text-anchor':'end','font-size':12,'font-weight':700,fill:col});};
-    const mobL=isMob();
-    if(st.day)lab(mobL?62:70,mobL?'D층':'D층 · 흡수 (absorption)','var(--d)');
-    lab(115,mobL?'E층':(st.day?'E층 (E layer)':'E층 · 야간 약화'),'var(--e)');
-    lab(310,mobL?'F층':'F층 (F2 layer)','var(--f2)');
-    /* ground */
-    let gd='';for(let x=0;x<=W;x+=10){gd+=(gd?'L':'M')+x+' '+groundY(x).toFixed(1);}
-    S('path',{d:gd+'L'+W+' '+H+'L0 '+H+'Z',fill:'var(--groundfill)'},svg);
-    S('path',{d:gd,fill:'none',stroke:'var(--ground)','stroke-width':2},svg);
-    const tstep=isMob()?500:1000;for(let k=tstep;k<=DMAX-300;k+=tstep){const x=xOfD(k),y=groundY(x);S('line',{x1:x,y1:y,x2:x,y2:y+6,stroke:'var(--ground)'},svg);T(svg,x,y+20,k.toLocaleString()+' km',{'text-anchor':'middle','font-size':11,fill:'var(--muted)',class:'mono'});}
-    /* tx */
-    const tx=P(0,0);S('line',{x1:tx[0],y1:tx[1],x2:tx[0],y2:tx[1]-16,stroke:'var(--ink)','stroke-width':2},svg);
-    S('path',{d:`M${tx[0]-6} ${tx[1]-16}L${tx[0]+6} ${tx[1]-16}`,stroke:'var(--ink)','stroke-width':2},svg);
-    T(svg,tx[0]+4,tx[1]+20,'송신 (TX)',{'font-size':11,fill:'var(--muted)'});
-
-    const kv=$('#p2kv');kv.replaceChildren();
-    const add=(k,v)=>{const dt=document.createElement('dt');dt.textContent=k;const dd=document.createElement('dd');dd.textContent=v;kv.append(dt,dd);};
-    const leg=$('#p2leg');leg.replaceChildren();
-    const legItem=(col,txt)=>{const s=document.createElement('span');s.innerHTML='<i style="background:'+col+'"></i>';s.append(txt);leg.append(s);};
-    const b=st.beta*Math.PI/180;
-    const sk=skip(st.f,pr);
-
-    if(st.mode==='single'){
-      let th0=0,first=null;
-      for(let hop=0;hop<(st.beta>=60?1:5);hop++){
-        const rp=rayPath(st.f,b,pr,th0);if(!first)first=rp;
-        const absorbed=pr.alf>0&&st.f<pr.alf;
-        const col=colorFor(rp.tr,absorbed);
-        const mk=rp.tr.layer==='P'?'mP':(absorbed?'mA':(rp.tr.layer==='E'?'mE':'mF'));
-        S('path',{d:rp.d,fill:'none',stroke:col,'stroke-width':hop?2:3,'stroke-opacity':hop?0.55-hop*0.08:1,'stroke-dasharray':absorbed?'6 5':'none','marker-end':(rp.tr.layer==='P'||hop===0)?'url(#'+mk+')':'none'},svg);
-        if(rp.tr.layer==='P')break;
-        const hit=P(rp.end,0);S('circle',{cx:hit[0],cy:hit[1],r:hop?3:4.5,fill:col,'fill-opacity':hop?0.6:1},svg);
-        if(hop===0){T(svg,hit[0]+10,hit[1]-(isMob()?30:16),Math.round(rp.dist).toLocaleString()+' km',{'text-anchor':'start','font-size':12,'font-weight':700,fill:col,class:'mono'});}
-        th0=rp.end;if(R*th0>DMAX-200)break;
-      }
-      const tr=first.tr;const absorbed=pr.alf>0&&st.f<pr.alf;
-      add('반사 위치 (reflecting layer)',tr.layer==='E'?'E층':tr.layer==='F'?'F층':'관통 (우주로)');
-      add('1홉 거리 (hop distance)',tr.layer==='P'?'—':Math.round(first.dist).toLocaleString()+' km');
-      add('이 앙각의 F층 MUF',fmt(mufAt(b,pr))+' MHz');
-      if(pr.foE>0)add('이 앙각의 E층 MUF',fmt(pr.foE/Math.cos(geom(b,110).i))+' MHz');
-      add('스킵 거리 (skip distance)',sk.d===null?'모든 앙각에서 관통':sk.d===0?'없음 (f ≤ foF2)':Math.round(sk.d).toLocaleString()+' km');
-      if(absorbed)add('D층','흡수로 신호 약함');
-      legItem('var(--ret)','F층 굴절 (F-layer refraction)');legItem('var(--retE)','E층 굴절 (E-layer refraction)');legItem('var(--pen)','관통 (penetration)');if(st.day)legItem('var(--abs)','D층 흡수 (D-layer absorption, ALF 이하)');
-      tip('단일 경로',[
-        '주파수 슬라이더를 올려 보면 굴절 위치가 높아지고 1홉 거리가 늘다가, 이 앙각의 F층 MUF('+fmt(mufAt(b,pr))+' MHz)를 넘는 순간 관통합니다.',
-        st.day?'주간에는 낮은 주파수가 E층에서 먼저 굴절하고, ALF(약 '+pr.alf+' MHz) 아래에서는 D층 흡수로 신호가 크게 약해집니다.':'야간에는 D층이 사라져 흡수가 거의 없고, E층도 약해져 낮은 주파수도 F층까지 올라갑니다.',
-        sk.d===0&&st.beta>=60?'NVIS: 운용 주파수가 foF2보다 낮아 수직에 가깝게 쏴도 돌아옵니다. 스킵 존 없이 송신점 주변 수백 km를 고르게 덮으므로, 산이 많은 지형의 국내 근거리·비상 통신에 쓰입니다. 주간에는 40 m, 야간에는 80 m가 흔히 쓰입니다.':'흐린 선은 같은 각도로 이어지는 2·3번째 홉입니다.'
-      ]);
-    } else if(st.mode==='fan'){
-      const betas=[2,4,6,8,10,13,16,20,25,30,36,44,54,66,80];
-      betas.forEach(dg=>{
-        const rp=rayPath(st.f,dg*Math.PI/180,pr,0);
-        const absorbed=pr.alf>0&&st.f<pr.alf;const col=colorFor(rp.tr,absorbed);
-        S('path',{d:rp.d,fill:'none',stroke:col,'stroke-width':1.8,'stroke-opacity':0.9,'stroke-dasharray':absorbed?'5 4':'none','marker-end':rp.tr.layer==='P'?'url(#mP)':'none'},svg);
-        if(rp.tr.layer!=='P'){const h=P(rp.end,0);S('circle',{cx:h[0],cy:h[1],r:2.6,fill:col},svg);}
-      });
-      /* ground wave + skip zone */
-      const gw=100;
-      const gpath=(d0,d1)=>{let s='';for(let d=d0;d<=d1;d+=20){const p=P(d/R,0);s+=(s?'L':'M')+p[0].toFixed(1)+' '+(p[1]-3).toFixed(1);}return s;};
-      S('path',{d:gpath(0,gw),fill:'none',stroke:'var(--ret)','stroke-width':6,'stroke-linecap':'round','stroke-opacity':0.8},svg);
-      if(sk.d&&sk.d>gw){
-        S('path',{d:gpath(gw,Math.min(sk.d,DMAX)),fill:'none',stroke:'var(--pen)','stroke-width':6,'stroke-opacity':0.45},svg);
-        const m=P(Math.min((gw+sk.d)/2,DMAX-300)/R,0);
-        T(svg,Math.max(m[0],tx[0]+(isMob()?120:150)),m[1]+(isMob()?52:40),'스킵 존 (skip zone) · 약 '+Math.round(sk.d).toLocaleString()+' km까지',{'text-anchor':'middle','font-size':12,'font-weight':700,fill:'var(--pen)'});
-      }
-      add('운용 주파수',fmt(st.f,2)+' MHz');
-      add('스킵 거리 (skip distance)',sk.d===null?'모든 앙각에서 관통':sk.d===0?'없음 (f ≤ foF2)':Math.round(sk.d).toLocaleString()+' km');
-      add('임계 앙각 (critical angle)',sk.d===null?'—':sk.d===0?'90° (수직도 반사)':fmt(sk.beta*180/Math.PI,1)+'°');
-      add('최저 앙각(0°) F층 MUF',fmt(mufAt(0.0005,pr))+' MHz');
-      legItem('var(--ret)','F층 굴절 (F-layer refraction)');legItem('var(--retE)','E층 굴절 (E-layer refraction)');legItem('var(--pen)','관통 (penetration)');legItem('var(--ret)','지표파 (ground wave, 육상 약 100 km)');
-      tip('주파수 고정 · 앙각 변화',[
-        '같은 주파수를 2°부터 80°까지 여러 앙각으로 발사한 경로입니다. 앙각이 높을수록 착지점이 송신점에 가까워집니다.',
-        '임계 앙각보다 높은 경로는 관통하므로, 지표파가 닿는 범위와 첫 공간파 착지점 사이에 아무것도 수신되지 않는 스킵 존이 생깁니다.',
-        '주파수를 foF2 아래로 내리면 모든 앙각이 돌아와 스킵 존이 사라집니다.'
-      ]);
-    } else {
-      const pal=['#8a5cf0','#4f86e8','#1fa2c7','#18a058','#7cb342','#d9b20f','#e98a22','#e0563a','#d6336c'];
-      const res=BANDS.map((bd,k)=>{const rp=rayPath(bd[1],b,pr,0);const absorbed=pr.alf>0&&bd[1]<pr.alf;
-        const txt=absorbed?'D층 흡수':rp.tr.layer==='P'?'관통':rp.tr.layer+'층 '+Math.round(rp.dist).toLocaleString()+' km';
-        return {bd:bd,k:k,rp:rp,absorbed:absorbed,txt:txt,col:pal[k]};});
-      /* 선택 밴드를 마지막에 그려 맨 위로 */
-      res.slice().sort((x,y)=>(x.k===st.sel)-(y.k===st.sel)).forEach(r=>{
-        const on=r.k===st.sel;
-        S('path',{d:r.rp.d,fill:'none',stroke:r.col,'stroke-width':on?3.6:1.7,'stroke-opacity':on?1:0.5,'stroke-linecap':'round',
-          'stroke-dasharray':r.absorbed?'7 5':(r.rp.tr.layer==='P'?'4 4':'none')},svg);
-      });
-      /* 착지점·관통 끝 라벨 (겹치지 않게 층 나누기) */
-      const marks=res.map(r=>{
-        if(r.rp.tr.layer==='P')return {r:r,x:r.rp.tip[0],y:r.rp.tip[1],top:true};
-        const h=P(r.rp.end,0);return {r:r,x:h[0],y:h[1],top:false};
-      });
-      /* 관통 끝점이 가까운 밴드는 라벨 하나로 묶기 */
-      const tops=marks.filter(m=>m.top).sort((a,b)=>a.y-b.y), groups=[];
-      tops.forEach(m=>{const g=groups.find(g=>Math.hypot(g[0].x-m.x,g[0].y-m.y)<26);if(g)g.push(m);else groups.push([m]);});
-      groups.forEach(g=>{const on=g.some(m=>m.r.k===st.sel);const lead=g.find(m=>m.r.k===st.sel)||g[0];
-        T(svg,g[0].x+6,g[0].y-2,g.slice().sort((x,y)=>x.r.k-y.r.k).map(m=>m.r.bd[0]).join(' · '),{'font-size':on?12:10.5,'font-weight':on?700:500,fill:lead.r.col,class:'mono'});});
-      const placed=[];
-      marks.filter(m=>!m.top).sort((a,b)=>a.x-b.x).forEach(m=>{
-        let lv=0;while(placed.some(o=>o.top===m.top&&o.lv===lv&&Math.abs(o.x-m.x)<(isMob()?46:34)))lv++;
-        placed.push({x:m.x,top:m.top,lv:lv});
-        const on=m.r.k===st.sel, col=m.r.col;
-        if(m.top){
-          T(svg,m.x+4,m.y-4-lv*13,m.r.bd[0],{'font-size':on?12:10.5,'font-weight':on?700:500,fill:col,class:'mono',opacity:on?1:0.8});
-        }else{
-          S('circle',{cx:m.x,cy:m.y,r:on?5:3.2,fill:col,stroke:'var(--panel)','stroke-width':1.2},svg);
-          const ly=m.y-12-lv*14;
-          if(lv)S('line',{x1:m.x,y1:m.y-5,x2:m.x,y2:ly+3,stroke:col,'stroke-width':1,opacity:0.6},svg);
-          T(svg,m.x,ly,m.r.bd[0],{'text-anchor':'middle','font-size':on?12:10.5,'font-weight':on?700:500,fill:col,class:'mono',opacity:on?1:0.8});
-        }
-      });
-      leg.replaceChildren();
-      res.forEach(r=>{const btn=document.createElement('button');btn.type='button';btn.className='legbtn'+(r.k===st.sel?' on':'');
-        btn.innerHTML='<i style="background:'+r.col+'"></i>';btn.append(r.bd[0]+' · '+r.txt);
-        btn.addEventListener('click',()=>{st.sel=r.k;draw();});leg.append(btn);});
-      const sr=res[st.sel];
-      add('방사 앙각 (elevation angle)',st.beta+'°');
-      add('이 앙각의 F층 MUF',fmt(mufAt(b,pr))+' MHz');
-      if(pr.foE>0)add('이 앙각의 E층 MUF',fmt(pr.foE/Math.cos(geom(b,110).i))+' MHz');
-      add('선택 밴드 '+sr.bd[0],sr.txt);
-      tip('앙각 고정 · 주파수 변화',[
-        '같은 앙각에서 160 m부터 10 m까지 아홉 밴드를 비교합니다. 아래 밴드 버튼을 누르면 그 밴드의 경로가 굵게 강조됩니다.',
-        '실선은 귀환, 짧은 점선은 관통, 긴 점선은 D층 흡수입니다. 귀환하는 밴드는 주파수가 높을수록 더 높은 곳에서 굴절해 더 멀리 떨어집니다.',
-        'MUF를 넘는 밴드는 관통하는데, MUF에 가까운 밴드일수록 많이 휘어진 뒤 빠져나갑니다. 앙각을 낮추면 MUF가 올라가 더 높은 밴드까지 돌아옵니다.'
-      ]);
-    }
-    if(isMob())bump(svg,1.45);
-    $('#p2foo').textContent=fmt(st.foF2)+' MHz';
-    $('#p2fout').textContent=fmt(st.f,2)+' MHz';
-    $('#p2bout').textContent=st.beta+'°';
-    $('#p2fwrap').style.display=st.mode==='cmp'?'none':'';
-    $('#p2bwrap').style.display=st.mode==='fan'?'none':'';
-    $$('#p2chips button').forEach(c=>c.classList.toggle('on',Math.abs(+c.dataset.v-st.f)<0.01));
-    $('#p2nvisD').classList.toggle('on',st.mode==='single'&&st.day&&Math.abs(st.f-7.1)<0.01&&st.beta===80&&st.foF2===9);
-    $('#p2nvisN').classList.toggle('on',st.mode==='single'&&!st.day&&Math.abs(st.f-3.6)<0.01&&st.beta===80&&st.foF2===5);
-  }
-  function tip(title,lines){$('#p2th').textContent='읽는 법 — '+title;const box=$('#p2tip');box.replaceChildren();lines.forEach(l=>{const p=document.createElement('p');p.style.margin='0 0 6px';p.textContent=l;box.append(p);});}
-  const chips=$('#p2chips');BANDS.forEach(bd=>{const c=document.createElement('button');c.textContent=bd[0];c.dataset.v=bd[1];chips.append(c);});
-  chips.addEventListener('click',e=>{const c=e.target.closest('button');if(!c)return;st.f=+c.dataset.v;$('#p2f').value=st.f;draw();});
-  segBind('p2mode',v=>{st.mode=v;draw();});
-  const nvis=(day)=>{st.mode='single';st.day=day;st.foF2=day?9:5;st.f=day?7.1:3.6;st.beta=80;
-    segSet('p2mode','single');segSet('p2day',day?'day':'night');$('#p2fo').value=st.foF2;$('#p2f').value=st.f;$('#p2b').value=80;draw();};
-  $('#p2nvisD').addEventListener('click',()=>nvis(true));$('#p2nvisN').addEventListener('click',()=>nvis(false));
-  segBind('p2day',v=>{st.day=v==='day';st.foF2=st.day?9:5;$('#p2fo').value=st.foF2;draw();});
-  $('#p2fo').addEventListener('input',e=>{st.foF2=+e.target.value;draw();});
-  $('#p2f').addEventListener('input',e=>{st.f=+e.target.value;draw();});
-  $('#p2b').addEventListener('input',e=>{st.beta=+e.target.value;draw();});
-  renderers.p2=draw;draw();
-})();
-
-/* =========================================================
-   ③ 하루·계절·태양 주기
-   ========================================================= */
-(function(){
-  const svg=$('#p3svg');
-  const BANDS=[['160m',1.9],['80m',3.6],['40m',7.1],['30m',10.12],['20m',14.2],['17m',18.1],['15m',21.2],['12m',24.9],['10m',28.5]];
-  const SEASON={
-    summer:{sr:5.3,ss:19.7,cz:0.98,noon:s=>1.0-0.0007*s,night:1.15,name:'여름'},
-    equinox:{sr:6.3,ss:18.6,cz:0.82,noon:()=>1.12,night:1.0,name:'춘·추분'},
-    winter:{sr:7.6,ss:17.4,cz:0.52,noon:s=>0.85+0.0012*s,night:0.8,name:'겨울'}
-  };
-  const st={ssn:100,season:'equinox',t:12};
-  let timer=null;
-  let X0=64,X1=800;const Y0=26,Y1=372,FMAX=40;
-  const xOf=h=>X0+h/24*(X1-X0), yOf=f=>Y1-f/FMAX*(Y1-Y0);
-
-  function model(){
-    const S_=SEASON[st.season],s=st.ssn;
-    const noon=(5.0+0.04*s)*S_.noon(s);
-    const night=(2.6+0.012*s)*S_.night;
-    const eve=Math.min(night*1.45,noon*0.9);
-    const te=S_.ss+2.5;
-    const track=t=>{
-      if(t>=S_.sr&&t<=te)return lerp(night,eve,(t-S_.sr)/(te-S_.sr));
-      const tt=t<S_.sr?t+24:t;return lerp(eve,night,(tt-te)/(S_.sr+24-te));
-    };
-    const foF2=t=>{const w=smooth((t-S_.sr)/3.2)*(1-smooth((t-(S_.ss-1.0))/3.5));const tr=track(t);return tr+(noon-tr)*w;};
-    const cosz=t=>{if(t<=S_.sr||t>=S_.ss)return 0;return S_.cz*Math.sin(Math.PI*(t-S_.sr)/(S_.ss-S_.sr));};
-    const alf=t=>(2.6+0.02*s)*Math.pow(cosz(t),0.75);
-    return {S_:S_,foF2:foF2,muf:t=>foF2(t)*M3000,alf:alf};
-  }
-  function status(f,m,t){const muf=m.muf(t),a=m.alf(t);if(f>muf)return 'closed';if(f<a)return 'abs';if(f>0.85*muf)return 'marg';return 'open';}
-  const COL={open:'var(--ret)',marg:'var(--marg)',abs:'var(--abs)',closed:'var(--closed)'};
-  const NAME={open:'양호 (open)',marg:'MUF 근접 (marginal)',abs:'D층 흡수 (absorbed)',closed:'관통 (closed)'};
-
-  function draw(){
-    const mob=isMob();X0=mob?58:64;X1=mob?548:800;svg.setAttribute('viewBox',mob?'0 0 610 430':'0 0 900 430');
-    svg.replaceChildren();
-    const m=model();
-    S('rect',{x:X0,y:Y0,width:X1-X0,height:Y1-Y0,fill:'var(--panel)',stroke:'var(--line)'},svg);
-    S('rect',{x:X0,y:Y0,width:xOf(m.S_.sr)-X0,height:Y1-Y0,fill:'var(--night)'},svg);
-    S('rect',{x:xOf(m.S_.ss),y:Y0,width:X1-xOf(m.S_.ss),height:Y1-Y0,fill:'var(--night)'},svg);
-    T(svg,xOf(m.S_.sr),Y0-8,'일출 (sunrise) '+hm(m.S_.sr),{'text-anchor':'middle','font-size':11,fill:'var(--muted)'});
-    T(svg,xOf(m.S_.ss),Y0-8,'일몰 (sunset) '+hm(m.S_.ss),{'text-anchor':'middle','font-size':11,fill:'var(--muted)'});
-    for(let h=0;h<=24;h+=(isMob()?6:3)){const x=xOf(h);S('line',{x1:x,y1:Y1,x2:x,y2:Y1+5,stroke:'var(--muted)'},svg);T(svg,x,Y1+20,String(h).padStart(2,'0')+':00',{'text-anchor':'middle','font-size':11,fill:'var(--muted)',class:'mono'});}
-    for(let f=0;f<=FMAX;f+=10){const y=yOf(f);S('line',{x1:X0,y1:y,x2:X1,y2:y,stroke:'var(--line)','stroke-dasharray':f?'2 4':'none'},svg);T(svg,X0-8,y+4,String(f),{'text-anchor':'end','font-size':11,fill:'var(--muted)',class:'mono'});}
-    T(svg,18,(Y0+Y1)/2,'주파수 (MHz)',{'text-anchor':'middle','font-size':12,fill:'var(--muted)',transform:'rotate(-90 18 '+((Y0+Y1)/2)+')'});
-    T(svg,(X0+X1)/2,Y1+40,'지방시 (local time)',{'text-anchor':'middle','font-size':12,fill:'var(--muted)'});
-    /* band timelines */
-    BANDS.forEach(bd=>{
-      const y=yOf(bd[1]);let seg0=0,s0=status(bd[1],m,0);
-      const flush=(a,b,s)=>{S('rect',{x:xOf(a),y:y-3,width:Math.max(xOf(b)-xOf(a),0.5),height:6,rx:2,fill:COL[s],'fill-opacity':s==='abs'?0.6:0.9},svg);};
-      for(let t=0.1;t<=24.001;t+=0.1){const s=status(bd[1],m,Math.min(t,23.999));if(s!==s0||t>23.95){flush(seg0,t,s0);seg0=t;s0=s;}}
-      T(svg,X1+8,y+4,bd[0],{'font-size':11,fill:'var(--muted)',class:'mono'});
-    });
-    /* curves */
-    const curve=(fn,attrs)=>{let d='';for(let t=0;t<=24.001;t+=0.1){const v=clamp(fn(Math.min(t,23.999)),0,FMAX+2);d+=(d?'L':'M')+xOf(t).toFixed(1)+' '+yOf(v).toFixed(1);}S('path',Object.assign({d:d,fill:'none'},attrs),svg);};
-    curve(m.alf,{stroke:'var(--abs)','stroke-width':2.2});
-    curve(m.foF2,{stroke:'var(--f2)','stroke-width':1.6,'stroke-dasharray':'5 4'});
-    curve(m.muf,{stroke:'var(--pen)','stroke-width':2.6});
-    /* cursor */
-    const x=xOf(st.t);S('line',{x1:x,y1:Y0,x2:x,y2:Y1,stroke:'var(--ink)','stroke-width':1.2,'stroke-dasharray':'3 3'},svg);
-    const mv=m.muf(st.t);S('circle',{cx:x,cy:yOf(Math.min(mv,FMAX)),r:4.5,fill:'var(--pen)'},svg);
-    T(svg,x+(st.t>20?-8:8),yOf(Math.min(mv,FMAX))-8,'MUF '+fmt(mv),{'font-size':12,'font-weight':700,fill:'var(--pen)',class:'mono','text-anchor':st.t>20?'end':'start'});
-    if(isMob())bump(svg,1.5);
-    /* readouts */
-    const kv=$('#p3kv');kv.replaceChildren();
-    const add=(k,v)=>{const dt=document.createElement('dt');dt.textContent=k;const dd=document.createElement('dd');dd.textContent=v;kv.append(dt,dd);};
-    add('시각',hm(st.t)+(st.t<m.S_.sr||st.t>m.S_.ss?' (야간)':' (주간)'));
-    add('foF2',fmt(m.foF2(st.t))+' MHz');
-    add('MUF (3,000 km)',fmt(mv)+' MHz');
-    add('OWF (≈ 0.85 MUF)',fmt(0.85*mv)+' MHz');
-    add('ALF',m.alf(st.t)<0.05?'≈ 0 (D층 없음)':fmt(m.alf(st.t))+' MHz');
-    const bl=$('#p3bl');bl.replaceChildren();
-    BANDS.slice().reverse().forEach(bd=>{const s=status(bd[1],m,Math.min(st.t,23.999));const tr=document.createElement('tr');tr.innerHTML='<td>'+bd[0]+'</td><td style="color:var(--muted);font-family:var(--mono);font-size:.9em">'+bd[1]+' MHz</td><td><span class="st '+s+'">'+NAME[s]+'</span></td>';bl.append(tr);});
-    $('#p3bh').textContent='밴드 상태 — '+hm(st.t)+', '+m.S_.name+', SSN '+st.ssn;
-    $('#p3so').textContent=st.ssn;$('#p3to').textContent=hm(st.t);$('#p3t').value=st.t;
-    $$('#p3sc button').forEach(c=>c.classList.toggle('on',+c.dataset.v===st.ssn));
-  }
-  function hm(t){t=((t%24)+24)%24;const h=Math.floor(t),mm=Math.round((t-h)*60);return String(mm===60?h+1:h).padStart(2,'0')+':'+String(mm===60?0:mm).padStart(2,'0');}
-  $('#p3s').addEventListener('input',e=>{st.ssn=+e.target.value;draw();});
-  $('#p3sc').addEventListener('click',e=>{const c=e.target.closest('button');if(!c)return;st.ssn=+c.dataset.v;$('#p3s').value=st.ssn;draw();});
-  segBind('p3season',v=>{st.season=v;draw();});
-  const stop=()=>{if(timer){clearInterval(timer);timer=null;$('#p3play').textContent='▶ 하루 재생';}};
-  window.addEventListener('tab-change-stop',stop);
-  $('#p3t').addEventListener('input',e=>{stop();st.t=+e.target.value;draw();});
-  $('#p3play').addEventListener('click',()=>{
-    if(timer){stop();return;}
-    $('#p3play').textContent='■ 정지';
-    timer=setInterval(()=>{st.t=+(st.t+0.1).toFixed(1);if(st.t>24)st.t=0;draw();},70);
+/* ---------- band outlook ---------- */
+const BANDS=[
+  {name:'80–40 m',day:s=>1,night:s=>2,low:true},
+  {name:'30–20 m',day:s=>s>=90?2:1,night:s=>s>=130?2:s>=95?1:0,low:true},
+  {name:'17–15 m',day:s=>s>=120?2:s>=90?1:0,night:s=>s>=160?1:0},
+  {name:'12–10 m',day:s=>s>=150?2:s>=115?1:0,night:s=>s>=200?1:0}
+];
+const NAMES=['p','f','g'],LBL={g:'양호',f:'보통',p:'불량'};
+function interpret(v){
+  const why=[];
+  const geo=(v.kp>=7||v.A>=50)?2:(v.kp>=5||v.A>=30)?1:0;
+  const sfi=v.sfi;
+  why.push(`SFI ${sfi.toFixed(0)}${v.sfiNote||''}: `+(sfi>=150?'12 m·10 m까지 주간 개방을 기대할 수 있습니다.':sfi>=120?'15 m는 주간에 양호하고, 10 m는 가끔 열립니다.':sfi>=90?'20 m가 주력이고, 17 m·15 m는 주간에 가끔 열립니다.':'하이 밴드는 대부분 닫혀 있고 낮은 밴드 위주입니다.'));
+  why.push(`Kp ${v.kp.toFixed(1)}, A ${v.A}: `+(geo===2?'강한 지자기 폭풍으로 전 대역이 크게 불안정합니다.':geo===1?'지자기 폭풍 수준이라 모든 밴드를 한 단계 낮춰 봅니다.':v.kp>=4||v.A>=16?'다소 활발합니다. 고위도·야간 경로에서 페이딩이 생길 수 있습니다.':'지자기가 조용해 전파에 유리합니다.'));
+  if(v.R>=3)why.push(`R${v.R}: 강한 X선 플레어로 햇빛이 비치는 쪽 HF가 두절될 수 있습니다. 주간 칸을 모두 불량으로 봅니다.`);
+  else if(v.R===2)why.push('R2: 주간 낮은 밴드(80 m~20 m)의 D층 흡수가 커집니다. 더 높은 주파수가 유리합니다.');
+  else if(v.R===1)why.push('R1: 주간 80 m~40 m가 잠시 약해질 수 있습니다.');
+  else why.push('R0: X선에 의한 주간 흡수 영향은 없습니다.');
+  if(v.S>=1)why.push(`S${v.S}: 극지방을 지나는 경로(예: 북미 동부·유럽 북부 방향 장거리)는 흡수가 큽니다.`);
+  if(v.bz!=null&&v.bz<=-10)why.push(`Bz ${v.bz.toFixed(1)} nT: 남쪽 방향이 강해 몇 시간 안에 Kp가 오를 수 있습니다.`);
+  why.push('주간 80 m~40 m는 D층 흡수 때문에 근거리 위주이고, 야간에 장거리가 열립니다.');
+  const rows=BANDS.map(b=>{
+    let d=b.day(sfi),n=b.night(sfi);
+    d-=geo;n-=geo;
+    if(v.R>=3)d=0;else if(v.R===2&&b.low)d-=1;
+    return {name:b.name,d:NAMES[clamp(d,0,2)],n:NAMES[clamp(n,0,2)]};
   });
-  renderers.p3=draw;draw();
+  return {rows:rows,why:why};
+}
+function renderOutlook(){
+  let v;
+  if(mode==='manual'||!liveOK){
+    v={sfi:+$('#mS').value,kp:+$('#mK').value,A:+$('#mA').value,R:+($('#mR .on')||{dataset:{v:0}}).dataset.v,S:0,bz:null,sfiNote:''};
+    $('#srcBadge').textContent='직접 입력 값 기준';$('#srcBadge').classList.add('man');
+  }else{
+    const r0=D.scales&&D.scales['0'];
+    v={sfi:D.sfi7!=null?D.sfi7:D.sfi,sfiNote:D.sfi7!=null?' (7일 평균)':'',kp:D.kpRecent!=null?D.kpRecent:D.kp,A:D.A!=null?D.A:0,
+       R:num(r0&&r0.R&&r0.R.Scale)||0,S:num(r0&&r0.S&&r0.S.Scale)||0,bz:D.bz};
+    $('#srcBadge').textContent='실시간 값 기준';$('#srcBadge').classList.remove('man');
+  }
+  const res=interpret(v);
+  const tb=$('#outlook');tb.replaceChildren();
+  tb.append(el('tr',null,'<th>밴드</th><th>주간 (Day)</th><th>야간 (Night)</th>'));
+  res.rows.slice().reverse().forEach(r=>{tb.append(el('tr',null,`<td>${r.name}</td><td><span class="cell ${r.d}">${LBL[r.d]}</span></td><td><span class="cell ${r.n}">${LBL[r.n]}</span></td>`));});
+  const ul=$('#why');ul.replaceChildren();res.why.forEach(w=>ul.append(el('li',null,w.replace(/^([^:]+):/,'<b>$1</b>:'))));
+}
+
+/* ---------- manual panel ---------- */
+function syncOut(){$('#mSo').textContent=$('#mS').value;$('#mKo').textContent=(+$('#mK').value).toFixed(1);$('#mAo').textContent=$('#mA').value;}
+['#mS','#mK','#mA'].forEach(id=>$(id).addEventListener('input',()=>{syncOut();if(mode==='manual'||!liveOK)renderOutlook();}));
+$('#mR').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$$('#mR button').forEach(x=>x.classList.toggle('on',x===b));if(mode==='manual'||!liveOK)renderOutlook();});
+$('#mUse').addEventListener('click',()=>{mode='manual';renderOutlook();});
+$('#mLive').addEventListener('click',()=>{mode='live';renderOutlook();});
+function seedManual(){
+  if(D.sfi!=null)$('#mS').value=Math.round(D.sfi7!=null?D.sfi7:D.sfi);
+  if(D.kp!=null)$('#mK').value=D.kp;
+  if(D.A!=null)$('#mA').value=D.A;
+  const r=num(D.scales&&D.scales['0']&&D.scales['0'].R&&D.scales['0'].R.Scale)||0;
+  $$('#mR button').forEach(b=>b.classList.toggle('on',+b.dataset.v===Math.min(r,3)));
+  syncOut();
+}
+
+/* ---------- solar cycle chart ---------- */
+let CYC=null;
+function renderCycle(){
+  const svg=$('#cyc');svg.replaceChildren();
+  if(!CYC||!CYC.obs){T(svg,450,170,'태양 주기 자료를 불러오지 못했습니다.',{'text-anchor':'middle','font-size':14,fill:'var(--muted)'});return;}
+  const mob=isMob(),W=mob?620:900,H=340;svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const X0=mob?44:50,X1=W-16,Y0=16,Y1=H-36;
+  const t0=2008,t1=2031,ym=s=>{const [y,m]=s.split('-').map(Number);return y+(m-0.5)/12;};
+  const obs=CYC.obs.filter(r=>ym(r['time-tag'])>=t0);
+  const pred=(CYC.pred||[]).filter(r=>ym(r['time-tag'])>=t0);
+  const ymax=Math.max(250,...obs.map(r=>r.ssn||0))+10;
+  const x=t=>X0+(t-t0)/(t1-t0)*(X1-X0),y=v=>Y1-v/ymax*(Y1-Y0);
+  S('rect',{x:X0,y:Y0,width:X1-X0,height:Y1-Y0,fill:'var(--panel)',stroke:'var(--line)'},svg);
+  for(let v=0;v<=ymax;v+=50){S('line',{x1:X0,x2:X1,y1:y(v),y2:y(v),stroke:'var(--line)','stroke-dasharray':v?'2 4':'none'},svg);T(svg,X0-6,y(v)+4,String(v),{'text-anchor':'end','font-size':11,fill:'var(--muted)',class:'mono'});}
+  for(let yr=t0;yr<=t1;yr+=(mob?4:2)){S('line',{x1:x(yr),x2:x(yr),y1:Y1,y2:Y1+5,stroke:'var(--muted)'},svg);T(svg,x(yr),Y1+19,String(yr),{'text-anchor':'middle','font-size':11,fill:'var(--muted)',class:'mono'});}
+  T(svg,16,(Y0+Y1)/2,'흑점 수',{'text-anchor':'middle','font-size':12,fill:'var(--muted)',transform:`rotate(-90 16 ${(Y0+Y1)/2})`});
+  /* prediction band */
+  if(pred.length){let top='',bot='';pred.forEach(r=>{const xx=x(ym(r['time-tag']));top+=(top?'L':'M')+xx.toFixed(1)+' '+y(r.high_ssn).toFixed(1);});
+    pred.slice().reverse().forEach(r=>{bot+='L'+x(ym(r['time-tag'])).toFixed(1)+' '+y(r.low_ssn).toFixed(1);});
+    S('path',{d:top+bot+'Z',fill:'var(--abs)','fill-opacity':0.18},svg);}
+  const line=(arr,key,attrs)=>{let d='';arr.forEach(r=>{const v=r[key];if(v==null||v<0)return;d+=(d?'L':'M')+x(ym(r['time-tag'])).toFixed(1)+' '+y(v).toFixed(1);});if(d)S('path',Object.assign({d:d,fill:'none'},attrs),svg);};
+  line(obs,'ssn',{stroke:'var(--muted)','stroke-opacity':0.55,'stroke-width':1.2});
+  line(obs,'smoothed_ssn',{stroke:'var(--accent)','stroke-width':2.8});
+  line(pred,'predicted_ssn',{stroke:'var(--abs)','stroke-width':2.4,'stroke-dasharray':'6 4'});
+  /* cycle labels */
+  T(svg,x(2013.5),y(150),'24주기',{'text-anchor':'middle','font-size':12,fill:'var(--muted)','font-weight':700});
+  T(svg,x(2024.5),Y0+16,'25주기',{'text-anchor':'middle','font-size':12,fill:'var(--muted)','font-weight':700});
+  /* now */
+  const now=new Date(),tn=now.getFullYear()+(now.getMonth()+0.5)/12;
+  S('line',{x1:x(tn),x2:x(tn),y1:Y0,y2:Y1,stroke:'var(--ink)','stroke-dasharray':'4 3'},svg);
+  T(svg,x(tn)+5,Y0+32,'지금',{'font-size':12,'font-weight':700,fill:'var(--ink)'});
+  /* peak marker */
+  if(CYC.peak){const px=x(ym(CYC.peak.t)),py=y(CYC.peak.v);S('circle',{cx:px,cy:py,r:5,fill:'var(--accent)',stroke:'var(--panel)','stroke-width':1.5},svg);
+    T(svg,px+(mob?-8:-10),py-10,`극대 ${CYC.peak.t} (${CYC.peak.v.toFixed(0)})`,{'text-anchor':'end','font-size':11.5,'font-weight':700,fill:'var(--accent)'});}
+  if(mob)svg.querySelectorAll('text').forEach(t=>t.setAttribute('font-size',(parseFloat(t.getAttribute('font-size'))*1.35).toFixed(1)));
+}
+function cycleText(){
+  if(!CYC||!CYC.obs)return;
+  const sm=CYC.obs.filter(r=>r.smoothed_ssn>=0);
+  const c25=sm.filter(r=>r['time-tag']>='2019-01');
+  const minR=sm.filter(r=>r['time-tag']>='2018-01'&&r['time-tag']<='2021-06').reduce((a,b)=>b.smoothed_ssn<a.smoothed_ssn?b:a);
+  const maxR=c25.reduce((a,b)=>b.smoothed_ssn>a.smoothed_ssn?b:a);
+  CYC.peak={t:maxR['time-tag'],v:maxR.smoothed_ssn};
+  const last=CYC.obs[CYC.obs.length-1];
+  const lastSm=sm[sm.length-1];
+  const nextMin=(CYC.pred||[]).find(r=>r.predicted_ssn<20);
+  const declining=lastSm['time-tag']>maxR['time-tag']&&lastSm.smoothed_ssn<maxR.smoothed_ssn*0.92;
+  $('#cycLine').textContent=`25주기 · ${maxR['time-tag']} 극대(평활 흑점 수 ${maxR.smoothed_ssn.toFixed(0)}) 이후 ${declining?'감소기':'극대기 부근'} · 최근 월평균 흑점 수 ${last.ssn.toFixed(0)} (${last['time-tag']})`;
+  $('#cycTxt').textContent=`태양 활동은 약 11년(9~14년) 주기로 오르내립니다. 지금은 25주기로, ${minR['time-tag']} 극소기(평활 흑점 수 ${minR.smoothed_ssn.toFixed(1)})에 시작해 ${maxR['time-tag']}에 평활 흑점 수 ${maxR.smoothed_ssn.toFixed(0)}로 가장 높았습니다. `+
+    (declining?`이후 감소하는 단계에 있으며, `:`현재 극대기 부근이며, `)+
+    `가장 최근 달(${last['time-tag']})의 월평균 흑점 수는 ${last.ssn.toFixed(0)}입니다.`+(nextMin?` NOAA 예측으로는 ${nextMin['time-tag'].slice(0,4)}년 무렵 흑점 수가 20 아래로 내려가 다음 극소기에 가까워집니다.`:'')+
+    ' 감소기에도 한동안은 15 m·12 m가 자주 열리지만, 극소기에 가까워질수록 20 m 이하 낮은 밴드 위주가 됩니다.';
+}
+
+
+/* ---------- 27-day outlook chart ---------- */
+const DAY=86400000;
+const md=t=>{const d=new Date(t);return (d.getUTCMonth()+1)+'/'+d.getUTCDate();};
+function renderO27(){
+  const svg=$('#o27');if(!svg)return;svg.replaceChildren();
+  const O=D.o27;
+  if(!O||!O.rows.length){T(svg,450,165,'27일 전망 자료를 불러오지 못했습니다.',{'text-anchor':'middle','font-size':14,fill:'var(--muted)'});$('#o27sum').innerHTML='<li>자료 없음</li>';return;}
+  const mob=isMob(),W=mob?620:900,H=330;svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const X0=mob?46:52,X1=W-(mob?40:44),Y0=18,Y1=H-40;
+  const p0=O.rows[0].d,pEnd=O.rows[O.rows.length-1].d,start=p0-14*DAY;
+  const toUTC=s=>{const [y,m,d]=s.split('-').map(Number);return Date.UTC(y,m-1,d);};
+  const obsS=(D.dsd||[]).map(r=>({d:toUTC(r.date),v:r.flux})).filter(r=>r.d>=start&&r.d<p0);
+  const obsK=(D.dgd||[]).map(r=>({d:toUTC(r.date),v:r.kpMax})).filter(r=>r.d>=start&&r.d<p0&&r.v!=null);
+  const allS=obsS.map(r=>r.v).concat(O.rows.map(r=>r.sfi));
+  const sLo=Math.floor((Math.min(...allS)-10)/10)*10,sHi=Math.ceil((Math.max(...allS)+10)/10)*10;
+  const nDays=(pEnd-start)/DAY+1,cw=(X1-X0)/nDays;
+  const xc=t=>X0+((t-start)/DAY+0.5)*cw;
+  const ys=v=>Y1-(v-sLo)/(sHi-sLo)*(Y1-Y0), yk=v=>Y1-v/9*(Y1-Y0);
+  S('rect',{x:X0,y:Y0,width:X1-X0,height:Y1-Y0,fill:'var(--panel)',stroke:'var(--line)'},svg);
+  for(let v=sLo;v<=sHi;v+=10){if((v-sLo)%(sHi-sLo>80?20:10))continue;S('line',{x1:X0,x2:X1,y1:ys(v),y2:ys(v),stroke:'var(--line)','stroke-dasharray':'2 4'},svg);T(svg,X0-6,ys(v)+4,String(v),{'text-anchor':'end','font-size':11,fill:'var(--abs)',class:'mono'});}
+  for(let k=0;k<=9;k+=3)T(svg,X1+6,yk(k)+4,String(k),{'font-size':11,fill:'var(--f2)',class:'mono'});
+  T(svg,14,(Y0+Y1)/2,'SFI (sfu)',{'text-anchor':'middle','font-size':12,fill:'var(--abs)',transform:`rotate(-90 14 ${(Y0+Y1)/2})`});
+  T(svg,W-8,(Y0+Y1)/2,'Kp',{'text-anchor':'middle','font-size':12,fill:'var(--f2)',transform:`rotate(90 ${W-8} ${(Y0+Y1)/2})`});
+  /* Kp bars */
+  const bar=(t,v,pred)=>{const w=Math.max(cw*0.62,2);const col=v>=5?'var(--pen)':v>=4?'var(--marg)':'var(--f2)';
+    S('rect',{x:xc(t)-w/2,y:yk(v),width:w,height:Y1-yk(v),fill:col,'fill-opacity':pred?0.35:0.85,rx:1.5},svg);
+    if(pred&&v>=5)T(svg,xc(t),yk(v)-4,'G'+gOfKp(v),{'text-anchor':'middle','font-size':10,'font-weight':700,fill:'var(--pen)',class:'mono'});};
+  obsK.forEach(r=>bar(r.d,r.v,false));O.rows.forEach(r=>bar(r.d,r.kp,true));
+  S('line',{x1:X0,x2:X1,y1:yk(5),y2:yk(5),stroke:'var(--pen)','stroke-dasharray':'5 4','stroke-width':1.2},svg);
+  T(svg,X1-4,yk(5)-4,'Kp 5',{'text-anchor':'end','font-size':10,'font-weight':700,fill:'var(--pen)',class:'mono'});
+  /* SFI lines */
+  const pl=(arr,attrs)=>{let d='';arr.forEach(r=>{d+=(d?'L':'M')+xc(r.d).toFixed(1)+' '+ys(r.v).toFixed(1);});if(d)S('path',Object.assign({d:d,fill:'none','stroke-linejoin':'round'},attrs),svg);arr.forEach(r=>S('circle',{cx:xc(r.d),cy:ys(r.v),r:2.4,fill:attrs.stroke,'fill-opacity':attrs['stroke-opacity']||1},svg));};
+  const predS=O.rows.map(r=>({d:r.d,v:r.sfi}));
+  if(obsS.length)pl([obsS[obsS.length-1]].concat(predS),{stroke:'var(--abs)','stroke-width':2.4,'stroke-opacity':0.45,'stroke-dasharray':'5 4'});
+  else pl(predS,{stroke:'var(--abs)','stroke-width':2.4,'stroke-opacity':0.45,'stroke-dasharray':'5 4'});
+  pl(obsS,{stroke:'var(--abs)','stroke-width':2.8});
+  /* today */
+  const now=Date.now(),tx=X0+((now-start)/DAY)*cw;
+  if(tx>X0&&tx<X1){S('line',{x1:tx,x2:tx,y1:Y0,y2:Y1,stroke:'var(--ink)','stroke-dasharray':'4 3'},svg);T(svg,tx+4,Y0+14,'오늘',{'font-size':12,'font-weight':700,fill:'var(--ink)'});}
+  /* x ticks: weekly from forecast start */
+  for(let t=p0-14*DAY;t<=pEnd;t+=7*DAY){S('line',{x1:xc(t),x2:xc(t),y1:Y1,y2:Y1+5,stroke:'var(--muted)'},svg);T(svg,xc(t),Y1+19,md(t),{'text-anchor':'middle','font-size':11,fill:'var(--muted)',class:'mono'});}
+  T(svg,X0+4,Y1+34,'← 관측',{'font-size':10.5,fill:'var(--muted)'});T(svg,X1-4,Y1+34,'예측 →',{'text-anchor':'end','font-size':10.5,fill:'var(--muted)'});
+  if(mob)svg.querySelectorAll('text').forEach(t=>t.setAttribute('font-size',(parseFloat(t.getAttribute('font-size'))*1.35).toFixed(1)));
+  /* summary */
+  $('#o27Iss').textContent=O.iss?'발표 '+O.iss.toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'short'}):'발표일 —';
+  const mx=O.rows.reduce((a,b)=>b.sfi>a.sfi?b:a),mn=O.rows.reduce((a,b)=>b.sfi<a.sfi?b:a);
+  const g=O.rows.filter(r=>r.kp>=5);
+  const kmap={};(D.dgd||[]).forEach(r=>{kmap[toUTC(r.date)]=r.kpMax;});
+  const li=[];
+  li.push(`<b>SFI</b>: ${md(mx.d)} 무렵 최고 ${mx.sfi}, ${md(mn.d)} 무렵 최저 ${mn.sfi}로 예측됩니다. `+(mx.sfi>=120?'최고치 전후는 15 m 이상 하이 밴드에 유리합니다.':'하이 밴드는 20 m 위주가 될 가능성이 큽니다.'));
+  if(g.length){const parts=g.map(r=>{const back=kmap[r.d-27*DAY];return md(r.d)+` (Kp ${r.kp}, G${gOfKp(r.kp)})`+(back!=null&&back>=4?` — 27일 전 ${md(r.d-27*DAY)}에도 Kp ${back.toFixed(1)}`:'');});
+    li.push(`<b>지자기 폭풍 예상일</b>: ${parts.join(', ')}.`);}
+  else li.push('<b>지자기</b>: 이 기간에는 Kp 5 이상 날이 예측되지 않았습니다.');
+  const quiet=O.rows.filter(r=>r.kp<=2&&r.sfi>=Math.max(100,mx.sfi-15));
+  if(quiet.length)li.push(`<b>조용하고 SFI도 높은 날</b>: ${quiet.slice(0,6).map(r=>md(r.d)).join(', ')} — 원거리 교신에 좋은 후보일입니다.`);
+  $('#o27sum').innerHTML=li.map(x=>'<li>'+x+'</li>').join('');
+}
+/* ---------- mini solar cycle (summary row) ---------- */
+function renderCycMini(){
+  const svg=$('#cycMini');svg.replaceChildren();if(!CYC||!CYC.obs)return;
+  const W=240,H=64,t0=2008,t1=2031,ym=s=>{const [y,m]=s.split('-').map(Number);return y+(m-0.5)/12;};
+  const x=t=>4+(t-t0)/(t1-t0)*(W-8),y=v=>H-6-v/180*(H-12);
+  const line=(arr,key,attrs)=>{let d='';arr.forEach(r=>{const v=r[key];if(v==null||v<0||ym(r['time-tag'])<t0)return;d+=(d?'L':'M')+x(ym(r['time-tag'])).toFixed(1)+' '+y(v).toFixed(1);});if(d)S('path',Object.assign({d:d,fill:'none'},attrs),svg);};
+  S('line',{x1:4,x2:W-4,y1:H-6,y2:H-6,stroke:'var(--line)'},svg);
+  line(CYC.obs,'smoothed_ssn',{stroke:'var(--accent)','stroke-width':2.2});
+  line(CYC.pred||[],'predicted_ssn',{stroke:'var(--abs)','stroke-width':2,'stroke-dasharray':'4 3'});
+  const now=new Date(),tn=now.getFullYear()+(now.getMonth()+0.5)/12;
+  const last=CYC.obs[CYC.obs.length-1];
+  S('circle',{cx:x(tn),cy:y(Math.min(last.ssn,175)),r:4,fill:'var(--ink)'},svg);
+  T(svg,x(tn)-6,12,'지금',{'text-anchor':'end','font-size':10,'font-weight':700,fill:'var(--ink)'});
+}
+/* ---------- load ---------- */
+async function load(){
+  $('#stTxt').innerHTML='<span class="dot"></span>NOAA SWPC 자료를 불러오는 중…';
+  const keys=['flux','dsd','dgd','kp','kpf','xray','flare','scales','magS','o27'];
+  const res=await Promise.allSettled(keys.map(k=>get(k,k==='dsd'||k==='dgd'||k==='o27')));
+  const R={};keys.forEach((k,i)=>R[k]=res[i].status==='fulfilled'?res[i].value:null);
+  /* flux & ssn */
+  try{const f=Array.isArray(R.flux)?R.flux[0]:R.flux;D.sfi=num(f&&f.flux);D.sfiTime=f&&f.time_tag;}catch(e){}
+  if(R.dsd){D.dsd=parseDSD(R.dsd);const l=D.dsd[D.dsd.length-1];if(l){if(D.sfi==null){D.sfi=l.flux;D.sfiTime=l.date;}D.ssn=l.ssn;D.ssnDate=l.date;}
+    const l7=D.dsd.slice(-7);if(l7.length){D.sfi7=l7.reduce((a,b)=>a+b.flux,0)/l7.length;D.ssn7=l7.reduce((a,b)=>a+b.ssn,0)/l7.length;}}
+  /* A */
+  if(R.dgd){D.dgd=parseDGD(R.dgd);const ok=D.dgd.filter(r=>r.A>=0);const last=D.dgd[D.dgd.length-1];
+    const full=ok.length?ok[ok.length-(last&&last.A>=0&&ok.length>1?2:1)]:null;
+    if(full){D.A=full.A;D.Adate=full.date;}if(last&&last.A>=0)D.Atoday=last.A;}
+  /* Kp */
+  if(R.kp){const rows=rowsOf(R.kp).filter(o=>kpVal(o)!=null);const l=rows[rows.length-1];if(l){D.kp=kpVal(l);D.kpTime=l.time_tag;}
+    D.kp7=rows.slice(-56).map(kpVal);D.kpRecent=Math.max(...rows.slice(-2).map(kpVal));
+    if(D.A==null&&l&&l.a_running!=null)D.A=num(l.a_running);}
+  if(R.kpf){const rows=rowsOf(R.kpf).filter(o=>o.observed&&o.observed!=='observed');const nxt=rows.slice(0,8).map(kpVal).filter(v=>v!=null);if(nxt.length)D.kpf=Math.max(...nxt);}
+  /* X-ray */
+  if(R.xray){const xs=R.xray.filter(o=>o.energy==='0.1-0.8nm');const l=xs[xs.length-1];if(l){D.xflux=l.flux;D.xTime=l.time_tag;}
+    const step=Math.max(1,Math.floor(xs.length/120));D.x6=xs.filter((_,i)=>i%step===0).map(o=>o.flux>0?o.flux:null);D.x6max=Math.max(...xs.map(o=>o.flux||0));}
+  if(R.flare){D.flare=Array.isArray(R.flare)?R.flare[0]:R.flare;}
+  /* scales */
+  if(R.scales)D.scales=R.scales;
+  /* Bz */
+  if(R.magS){const m=Array.isArray(R.magS)?R.magS[0]:R.magS;if(m){D.bz=num(m.bz_gsm);D.bt=num(m.bt);D.bzTime=m.time_tag;}}
+  const got=keys.filter(k=>R[k]!=null).length;
+  liveOK=D.sfi!=null&&D.kp!=null;
+  $('#stTxt').innerHTML=liveOK?`<span class="dot ok"></span>NOAA SWPC 자료 ${got}/${keys.length}개 불러옴 · ${new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',hour12:false})}`
+    :'<span class="dot err"></span>실시간 자료를 불러오지 못했습니다. 아래 "직접 값 넣어 보기"로 해석할 수 있습니다.';
+  if(R.o27){try{D.o27=parse27(R.o27);}catch(e){D.o27=null;}}
+  renderScales();renderMetrics();renderO27();
+  $('#mLive').style.display=liveOK?'':'none';
+  if(liveOK){seedManual();}else{$('#manual').open=true;syncOut();}
+  renderOutlook();
+}
+async function loadCycle(){
+  try{const [o,p]=await Promise.all([get('obs'),get('pred').catch(()=>null)]);CYC={obs:o,pred:p};cycleText();}catch(e){CYC=null;$('#cycTxt').textContent='태양 주기 자료를 불러오지 못했습니다.';}
+  if(!CYC)$('#cycLine').textContent='태양 주기 자료를 불러오지 못했습니다.';
+  renderCycle();renderCycMini();
+}
+$('#reload').addEventListener('click',load);
+const onMQ=()=>{renderCycle();renderO27();};if(MQ.addEventListener)MQ.addEventListener('change',onMQ);else MQ.addListener(onMQ);
+syncOut();renderOutlook();
+load();loadCycle();
 })();
 
-/* =========================================================
-   ④ 태양 교란
-   ========================================================= */
-(function(){
-  const svg=$('#p4svg');
-  const FREQ=[[3.5,'80m','#c43a52'],[7.1,'40m','#e07a2f'],[14.2,'20m','#c0b62a'],[21.2,'15m','#3aa776'],[28.5,'10m','#4f86e8']];
-  let X0=70,X1=860;const Y0=22,Y1=300,YMIN=-50;
-  const gauss=(x,m,w)=>Math.exp(-0.5*Math.pow((x-m)/w,2));
-  const EV={
-    swf:{name:'단파 페이드아웃 (Short Wave Fade-out, SWF)',t0:-20,t1:150,unit:'분',tick:30,mark:[0,'플레어 시작'],
-      sig:(f,t)=>{if(t<0)return 0;const depth=Math.min(48,45*Math.pow(5/f,1.6));const tau=20+60*(5/f);return -depth*(1-Math.exp(-t/1.5))*Math.exp(-t/tau);},
-      cap:'주간 경로에서 대형 플레어가 일어난 뒤의 주파수별 상대 신호 세기. 낮은 주파수일수록 깊게 떨어지고 늦게 회복.',
-      dl:[['원인','태양 플레어의 X선이 D 영역의 이온화를 급격히 높여 HF 흡수가 커집니다.'],['시작·지속','플레어와 동시에 즉시 시작하고, 수 분에서 수 시간 동안 이어집니다. 지속 시간은 플레어의 지속 시간에 따릅니다.'],['영향 경로','주간(일광) 구간을 지나는 경로만 영향을 받습니다. 태양 고도가 높은 지점을 지날수록 흡수가 큽니다.'],['주파수 영향','낮은 주파수가 가장 먼저, 가장 크게 영향을 받고 가장 늦게 회복합니다. 높은 주파수는 계속 쓸 수 있는 경우가 많습니다.'],['대응','가능한 한 더 높은 주파수로 옮깁니다.'],['다른 이름','델린저 현상, 돌발 전리층 교란(Sudden Ionospheric Disturbance, SID)'],['NOAA 등급','R1–R5 (Radio Blackout) — X선 플레어 세기 기준. R1(M1급)은 주간 HF가 가끔 약하게 끊기는 수준, R3(X1급) 이상은 주간 쪽 HF가 넓은 지역에서 약 1시간 두절됩니다.']]},
-    storm:{name:'전리층 폭풍 (Ionospheric Storm)',t0:-1,t1:5,unit:'일',tick:1,mark:[0,'지자기 교란 시작'],
-      muf:t=>{let k=1;if(t>0)k+=0.15*Math.sin(Math.PI*clamp(t/0.4,0,1));k-=0.45*smooth((t-0.3)/0.5)*(1-smooth((t-1.5)/2.5));return 31*k;},
-      sig:null,
-      cap:'주간 3,000 km 경로 기준. 초기에 잠시 MUF가 오른 뒤 크게 떨어져, 높은 주파수부터 관통으로 닫히는 모습.',
-      dl:[['원인','코로나 질량 방출(CME) 등으로 지구 자기장(geomagnetic field)이 교란되면, 자기장과 얽힌 전리층도 크게 흔들립니다. 이를 지자기 폭풍(geomagnetic storm)이라 합니다.'],['시작·지속','초기에 전자 밀도가 잠시 늘었다가 곧 크게 줄어드는 양상이 흔하며, 며칠 동안 이어질 수 있습니다.'],['영향 경로','저위도보다 고위도 경로가 훨씬 크게 영향을 받습니다.'],['주파수 영향','전자 밀도 감소로 MUF가 내려가 평소 쓰던 높은 주파수가 전리층을 관통합니다. 페이드아웃과 반대로 높은 주파수부터 타격을 받습니다.'],['대응','가능한 한 더 낮은 주파수로 옮깁니다.'],['NOAA 등급','G1–G5 (Geomagnetic Storm) — 지자기 지수 Kp 기준. G1은 Kp 5, G5는 Kp 9이며, 등급이 높을수록 고위도부터 HF 전파가 불안정해지고 중위도까지 영향이 넓어집니다.']]},
-    pca:{name:'극관 흡수 (Polar Cap Absorption, PCA)',t0:-1,t1:10,unit:'일',tick:1,mark:[0,'대형 플레어'],
-      sig:(f,t)=>{if(t<0)return 0;const depth=Math.min(50,40*Math.pow(10/f,0.8));return -depth*smooth(t/0.06)*(1-smooth((t-1.5)/7));},
-      cap:'극지방을 지나는 경로 기준. 전 대역이 흡수되며 수 일에서 최대 10일 가까이 이어지는 모습.',
-      dl:[['원인','대형 플레어 때 방출된 고에너지 양성자(energetic proton)가 지구 자기력선(magnetic field line)을 따라 극지방으로 들어와 극지 D 영역을 강하게 이온화합니다.'],['시작·지속','플레어 후 빠르면 10분 안에 시작해 최대 10일까지 이어질 수 있습니다.'],['영향 경로','극지방을 반사점으로 지나는 경로. 햇빛이 아닌 입자로 이온화되므로 겨울 극야(polar night) 지역에서도 똑같이 일어납니다.'],['주파수 영향','HF 전 대역의 흡수가 매우 커지고, 낮은 주파수일수록 심합니다.'],['대응','극지방 반사점을 거치지 않는 경로로 우회하거나 중계합니다. 극대기에 잦지만 페이드아웃만큼 흔하지는 않습니다.'],['NOAA 등급','S1–S5 (Solar Radiation Storm) — 10 MeV 이상 양성자 플럭스 기준(S1 10 pfu ~ S5 10⁵ pfu). 등급이 높을수록 극지 경유 HF가 오래, 완전히 끊깁니다.']]},
-    es:{name:'돌발 E층 (Sporadic E, Es)',t0:6,t1:22,unit:'시',tick:2,mark:null,
-      sig:(f,t)=>{const E=gauss(t,10.5,0.6)+gauss(t,12.7,0.9)+0.7*gauss(t,15.2,0.5)+0.8*gauss(t,17.8,0.7);const e=Math.min(E,1.1);
-        if(f>25)return -50+44*e; if(f>20)return -32+27*e; if(f>12)return -4*e; return 0;},
-      cap:'여름 주간, 태양 활동이 낮아 F층으로는 10 m가 닫혀 있는 날의 예. Es가 생기는 동안에만 10 m·15 m 근거리 도약이 열리는 모습.',
-      dl:[['원인','E 영역(90~140 km) 안에 F층에 맞먹는 고밀도 전자층이 국지적으로, 대체로 예측하기 어렵게 생깁니다.'],['시작·지속','덮는 면적은 수 km에서 수백 km, 지속 시간은 수 분에서 수 시간까지 크게 다릅니다.'],['영향 경로','중·저위도에서는 주로 여름철 주간과 초저녁에 잦고, 고위도에서는 주로 밤에 생깁니다.'],['주파수 영향','평소 F층용 높은 주파수까지 반사해 10 m·6 m에 약 1,000~2,000 km 도약을 만들기도 합니다. 반대로 F층을 가려(blanketing) F층 경로가 끊기거나 페이딩이 생길 수 있습니다.'],['대응','Es가 열리면 10 m·6 m 근거리 DX 기회로 활용합니다.'],['NOAA 등급','해당 등급 없음 — 태양 교란이 아닌 E 영역 자체의 현상입니다.']]}
-  };
-  let cur='swf';
-  function sigOf(ev,f,t){
-    if(ev.sig)return ev.sig(f,t);
-    const muf=ev.muf(t);const closed=smooth((f-muf)/6+0.5);
-    const lowAbs=f<8?-4*smooth(t/0.5)*(1-smooth((t-2)/2)):0;
-    return -48*closed+lowAbs;
-  }
-  function draw(){
-    const mob=isMob();X0=mob?78:70;X1=mob?575:860;svg.setAttribute('viewBox',mob?'0 0 610 370':'0 0 900 370');
-    svg.replaceChildren();
-    const ev=EV[cur];
-    const xOf=t=>X0+(t-ev.t0)/(ev.t1-ev.t0)*(X1-X0), yOf=v=>Y0+(-v)/(-YMIN)*(Y1-Y0);
-    S('rect',{x:X0,y:Y0,width:X1-X0,height:Y1-Y0,fill:'var(--panel)',stroke:'var(--line)'},svg);
-    for(let v=0;v>=YMIN;v-=10){const y=yOf(v);S('line',{x1:X0,y1:y,x2:X1,y2:y,stroke:'var(--line)','stroke-dasharray':v?'2 4':'none'},svg);T(svg,X0-8,y+4,String(v),{'text-anchor':'end','font-size':11,fill:'var(--muted)',class:'mono'});}
-    const t0=Math.ceil(ev.t0/ev.tick)*ev.tick;
-    const tk=ev.tick*(isMob()&&cur==='es'?2:1);for(let t=t0;t<=ev.t1+1e-9;t+=tk){const x=xOf(t);S('line',{x1:x,y1:Y1,x2:x,y2:Y1+5,stroke:'var(--muted)'},svg);T(svg,x,Y1+20,(cur==='es'?String(t).padStart(2,'0')+':00':String(t)),{'text-anchor':'middle','font-size':11,fill:'var(--muted)',class:'mono'});}
-    T(svg,(X0+X1)/2,Y1+42,cur==='es'?'지방시':'시간 ('+ev.unit+')',{'text-anchor':'middle','font-size':12,fill:'var(--muted)'});
-    {const yx=isMob()?14:20;T(svg,yx,(Y0+Y1)/2,isMob()?'상대 신호 세기 (dB)':'상대 신호 세기 (relative signal, dB)',{'text-anchor':'middle','font-size':12,fill:'var(--muted)',transform:'rotate(-90 '+yx+' '+((Y0+Y1)/2)+')'});}
-    if(ev.mark){const x=xOf(ev.mark[0]);S('line',{x1:x,y1:Y0,x2:x,y2:Y1,stroke:'var(--ink)','stroke-dasharray':'4 3'},svg);T(svg,x+6,Y1-8,ev.mark[1],{'font-size':11,fill:'var(--ink)'});}
-    FREQ.forEach(fr=>{
-      let d='';for(let k=0;k<=320;k++){const t=ev.t0+(ev.t1-ev.t0)*k/320;const v=clamp(sigOf(ev,fr[0],t),YMIN,0);d+=(d?'L':'M')+xOf(t).toFixed(1)+' '+yOf(v).toFixed(1);}
-      S('path',{d:d,fill:'none',stroke:fr[2],'stroke-width':2.4,'stroke-linejoin':'round'},svg);
-    });
-    if(isMob())bump(svg,1.5);
-    const leg=$('#p4leg');leg.replaceChildren();
-    FREQ.forEach(fr=>{const s=document.createElement('span');s.innerHTML='<i style="background:'+fr[2]+'"></i>';s.append(fr[1]+' ('+fr[0]+' MHz)');leg.append(s);});
-    $('#p4cap').textContent=ev.cap+' 0 dB는 평상시 수준.';
-    const card=$('#p4card');card.replaceChildren();
-    const h=document.createElement('h3');h.textContent=ev.name;card.append(h);
-    const dl=document.createElement('dl');ev.dl.forEach(([k,v])=>{const dt=document.createElement('dt');dt.textContent=k;const dd=document.createElement('dd');dd.textContent=v;dl.append(dt,dd);});card.append(dl);
-  }
-  segBind('p4ev',v=>{cur=v;draw();});
-  renderers.p4=draw;draw();
-})();
-})();
 </script>
 </body>
 </html>
