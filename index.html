@@ -82,6 +82,9 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .seg button{appearance:none;border:0;background:var(--panel);color:var(--muted);font:inherit;font-size:.88em;padding:6px 12px;cursor:pointer}
 .seg button+button{border-left:1px solid var(--line)}
 .seg button.on{background:var(--accent);color:var(--accent-ink)}
+.seg button small{display:block;font-size:.74em;line-height:1.25;opacity:.72;margin-top:1px;letter-spacing:.01em}
+.seg button{line-height:1.35;text-align:center}
+@media (max-width:640px){.seg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,128px),1fr));width:100%}.seg button+button{border-left:0}.seg button{box-shadow:0 0 0 .5px var(--line);padding:7px 8px}}
 .chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
 .chips button{appearance:none;border:1px solid var(--line);background:var(--panel);color:var(--muted);font-family:var(--mono);font-size:.76em;padding:2px 7px;border-radius:6px;cursor:pointer}
 .chips button.on{border-color:var(--accent);color:var(--accent)}
@@ -164,7 +167,7 @@ svg .mono{font-family:var(--mono)}
       </div>
       <div class="ctrl">
         <div><label>시간대</label>
-          <div class="seg" id="p1day"><button class="on" data-v="0">주간 (Day)</button><button data-v="1">야간 (Night)</button></div>
+          <div class="seg" id="p1day"><button class="on" data-v="0">주간<small>Day</small></button><button data-v="1">야간<small>Night</small></button></div>
         </div>
         <div><label>낮 → 밤 전환 <output id="p1to">0%</output></label><input type="range" id="p1t" min="0" max="100" value="0"></div>
       </div>
@@ -173,7 +176,8 @@ svg .mono{font-family:var(--mono)}
       <div class="card read">
         <h3>임계 주파수 (critical frequency)</h3>
         <dl class="kv" id="p1kv"></dl>
-        <p class="note" style="margin-top:10px">수직으로 입사한 전파가 반사되는 최고 주파수입니다. 층의 최대 전자 밀도 N(electrons/m³)으로 정해지며, f₀ ≈ 9·√N Hz 관계를 따릅니다.</p>
+        <p style="font-size:.9em;margin:10px 0 0">전파를 수직으로 쏘아 올렸을 때 그 층에서 되돌아오는 가장 높은 주파수입니다. 층의 자유 전자가 많을수록 높아지고, 이보다 높은 주파수는 수직으로 쏘면 층을 뚫고 나갑니다. 실제 값은 이오노존데(ionosonde)라는 수직 탐측 장비로 측정합니다.</p>
+        <p class="note" style="margin-top:8px;font-size:.8em">f₀ ≈ 9·√N<sub>max</sub> (Hz) — N<sub>max</sub>: 층의 최대 전자 밀도(electrons/m³)</p>
       </div>
       <div class="card read info" id="p1info"></div>
     </div>
@@ -199,10 +203,10 @@ svg .mono{font-family:var(--mono)}
     </div>
     <div class="ctrl">
       <div style="grid-column:1/-1"><label>보기 방식</label>
-        <div class="seg" id="p2mode"><button class="on" data-v="single">단일 경로</button><button data-v="fan">주파수 고정 · 앙각 변화</button><button data-v="cmp">앙각 고정 · 주파수 변화</button></div>
+        <div class="seg" id="p2mode"><button class="on" data-v="single">단일 경로<small>Single path</small></button><button data-v="fan">주파수 고정 · 앙각 변화<small>Fixed frequency</small></button><button data-v="cmp">앙각 고정 · 주파수 변화<small>Fixed elevation</small></button></div>
       </div>
       <div><label>시간대</label>
-        <div class="seg" id="p2day"><button class="on" data-v="day">주간</button><button data-v="night">야간</button></div>
+        <div class="seg" id="p2day"><button class="on" data-v="day">주간<small>Day</small></button><button data-v="night">야간<small>Night</small></button></div>
       </div>
       <div><label>F2 임계 주파수 foF2 <output id="p2foo">9.0 MHz</output></label><input type="range" id="p2fo" min="2" max="14" step="0.1" value="9"></div>
       <div id="p2fwrap"><label>운용 주파수 <output id="p2fout">14.20 MHz</output></label><input type="range" id="p2f" min="1.8" max="30" step="0.05" value="14.2">
@@ -217,6 +221,7 @@ svg .mono{font-family:var(--mono)}
   </div>
 
   <ul class="points">
+    <li><b>임계 주파수와 MUF:</b> foF2는 수직으로 쏘았을 때의 한계입니다. 비스듬히 들어가는 전파는 더 높은 주파수까지 돌아와, MUF ≈ foF2 × sec <i>i</i>(<i>i</i>: 층에 입사하는 각도)가 됩니다. 3,000 km 경로에서는 foF2의 약 3배입니다.</li>
     <li><b>앙각 고정:</b> 주파수를 MUF 쪽으로 올릴수록 전리층 더 높은 곳에서 굴절하고 도달 거리가 늘어납니다. MUF를 넘으면 전리층을 관통(penetrate)합니다.</li>
     <li><b>주파수 고정:</b> 앙각을 높일수록 도달 거리가 짧아지다가, 임계 앙각(critical elevation angle)을 넘으면 관통합니다. 그 결과 송신점 주변에 공간파(sky wave)가 닿지 않는 <b>스킵 존(skip zone)</b>이 생깁니다.</li>
     <li>운용 주파수가 foF2 이하이면 수직 입사도 반사되므로 스킵 존이 없습니다. 근거리 고앙각 운용(NVIS, Near Vertical Incidence Skywave)이 이 조건을 이용합니다.</li>
@@ -246,9 +251,9 @@ svg .mono{font-family:var(--mono)}
     </div>
     <div class="ctrl">
       <div><label>태양 흑점 수 SSN (sunspot number) <output id="p3so">100</output></label><input type="range" id="p3s" min="0" max="200" step="1" value="100">
-        <div class="chips" id="p3sc"><button data-v="10">극소기 10</button><button data-v="70">중간 70</button><button data-v="150">극대기 150</button></div></div>
+        <div class="chips" id="p3sc"><button data-v="10">극소기 (solar min) 10</button><button data-v="70">중간 70</button><button data-v="150">극대기 (solar max) 150</button></div></div>
       <div><label>계절</label>
-        <div class="seg" id="p3season"><button data-v="summer">여름</button><button class="on" data-v="equinox">춘·추분</button><button data-v="winter">겨울</button></div>
+        <div class="seg" id="p3season"><button data-v="summer">여름<small>Summer</small></button><button class="on" data-v="equinox">춘·추분<small>Equinox</small></button><button data-v="winter">겨울<small>Winter</small></button></div>
       </div>
       <div><label>시각 (지방시) <output id="p3to">12:00</output></label><input type="range" id="p3t" min="0" max="24" step="0.1" value="12">
         <button class="playbtn" id="p3play">▶ 하루 재생</button></div>
@@ -277,7 +282,7 @@ svg .mono{font-family:var(--mono)}
   <div class="card">
     <div class="ctrl" style="border-top:0;border-bottom:1px solid var(--line)">
       <div><label>교란 종류</label>
-        <div class="seg" id="p4ev"><button class="on" data-v="swf">단파 페이드아웃</button><button data-v="storm">전리층 폭풍</button><button data-v="pca">극관 흡수</button><button data-v="es">돌발 E층</button></div>
+        <div class="seg" id="p4ev"><button class="on" data-v="swf">단파 페이드아웃<small>Short Wave Fade-out</small></button><button data-v="storm">전리층 폭풍<small>Ionospheric Storm</small></button><button data-v="pca">극관 흡수<small>Polar Cap Absorption</small></button><button data-v="es">돌발 E층<small>Sporadic E</small></button></div>
       </div>
     </div>
     <div class="stage">
