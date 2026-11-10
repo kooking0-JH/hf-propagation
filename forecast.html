@@ -50,8 +50,21 @@ a{color:var(--accent)}
 .brand{font-weight:700;letter-spacing:-.01em}
 .brand small{font-weight:500;color:var(--muted);margin-left:6px;font-size:.8em}
 .site nav{display:flex;gap:4px;flex-wrap:wrap}
-.site nav a{padding:6px 12px;white-space:nowrap;border-radius:8px;text-decoration:none;color:var(--muted);font-weight:500;font-size:.94em}
-.site nav a.on{background:var(--soft);color:var(--ink)}
+.site nav{gap:8px}
+.site .wrap{padding-top:8px;padding-bottom:8px}
+.site nav a{padding:6px 14px;white-space:nowrap;border-radius:9px;text-decoration:none;color:var(--ink);font-weight:600;font-size:.92em;background:var(--panel);border:1.5px solid var(--line);box-shadow:0 2px 0 var(--line);transition:border-color .12s,background .12s}
+.site nav a:not(.on)::after{content:' ›';color:var(--muted)}
+.site nav a:not(.on):hover{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--panel))}
+.site nav a:not(.on):active{transform:translateY(2px);box-shadow:none}
+.site nav a.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);box-shadow:none;cursor:default}
+/* 페이지 끝 이동 카드 */
+a.nextcard{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:30px 0 0;padding:16px 20px;border:1.5px solid var(--accent);border-radius:12px;background:color-mix(in srgb,var(--accent) 6%,var(--panel));color:var(--ink);text-decoration:none;box-shadow:0 2px 0 color-mix(in srgb,var(--accent) 35%,transparent);transition:background .12s}
+a.nextcard:hover{background:color-mix(in srgb,var(--accent) 12%,var(--panel))}
+a.nextcard:active{transform:translateY(2px);box-shadow:none}
+a.nextcard small{display:block;font-size:.8em;color:var(--muted);font-weight:500}
+a.nextcard b{display:block;font-size:1.12em;color:var(--accent)}
+a.nextcard span.d{display:block;font-size:.88em;color:var(--muted);margin-top:2px}
+a.nextcard .arr{font-size:1.6em;font-weight:700;color:var(--accent);flex:none}
 .site nav a.soon{cursor:default;opacity:.65}
 .site nav a.soon em{font-style:normal;font-size:.78em;margin-left:5px;padding:1px 6px;border:1px solid var(--line);border-radius:10px}
 
@@ -425,6 +438,8 @@ details[open] .cyctog .c{display:inline}
     <li>국립전파연구원 우주전파센터 — 국내 이오노존데(이천·제주) 전리층 관측과 우주전파환경 경보</li>
   </ul>
 </section>
+
+<a class="nextcard" href="index.html"><div><small>원리 페이지</small><b>전리층 원리</b><span class="d">전리층 구조, 굴절과 MUF, 하루·계절·태양 주기에 따른 변화, 태양 교란이 일어나는 원리를 그림으로 살펴봅니다.</span></div><span class="arr">→</span></a>
 
 <footer>
   실시간 값은 NOAA SWPC 공개 자료를 그대로 불러와 표시하며, 밴드별 경향은 그 값에 경험적 기준을 적용한 참고용 추정입니다. 지표 기준값은 VE2XIP 「Understanding HF propagation reports」, NOAA Space Weather Scales를 바탕으로 정리했습니다.
